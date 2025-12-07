@@ -9,7 +9,7 @@ export type PaymentsFilters = {
   doctorId?: string | null
   chargeId?: string | null
   visitId?: string | null
-  method?: PaymentMethod | null
+  method?: PaymentMethod[] | null
 }
 
 export interface IPaymentRepository
