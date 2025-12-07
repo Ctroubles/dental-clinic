@@ -13,7 +13,6 @@ export interface IItemRepository extends IBaseRepository<Item, ItemsFilters> {
   findByType(type: Item["type"]): Promise<Item[]>
   findActive(): Promise<Item[]>
   create(item: ItemInsert, createdBy: string): Promise<Item>
-  update(item: Item): Promise<Item | null>
   delete(id: Item["id"]): Promise<Item | null>
   getAll(filters?: ItemsFilters): Promise<Item[]>
 }

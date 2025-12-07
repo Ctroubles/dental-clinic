@@ -23,30 +23,30 @@ export type IUpdatePatientController = ReturnType<
 export const updatePatientController =
   (updatePatientUseCase: IUpdatePatientUseCase) =>
   async (
-    input: { patientId: string; updatedPatient: PatientInsert },
+    input: { id: string; data: PatientInsert },
     userId: string
   ): Promise<DataResult<Patient>> => {
     // Convert dateOfBirth string back to Date object if it exists
     const processedPatient = {
-      ...input.updatedPatient,
-      dateOfBirth: input.updatedPatient.dateOfBirth
-        ? new Date(input.updatedPatient.dateOfBirth)
-        : input.updatedPatient.dateOfBirth,
+      ...input.data,
+      dateOfBirth: input.data.dateOfBirth
+        ? new Date(input.data.dateOfBirth)
+        : null,
     }
 
     const { data, error: parseError } =
       patientInsertSchema.safeParse(processedPatient)
+
     if (parseError) {
       return DataResult.failure(new ValidationError(parseError))
     }
-    const response = await updatePatientUseCase(
-      { patientId: input.patientId, updatedPatient: data },
-      userId
-    )
+    const response = await updatePatientUseCase({ id: input.id, data }, userId)
+
     if (!response) {
       return DataResult.failure(
-        new NotFoundError(`Paciente con ID ${input.patientId} no encontrado.`)
+        new NotFoundError(`Paciente con ID ${input.id} no encontrado.`)
       )
     }
+
     return DataResult.success(presenter(response))
   }

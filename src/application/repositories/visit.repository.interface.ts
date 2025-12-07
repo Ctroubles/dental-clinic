@@ -9,10 +9,9 @@ export type VisitsFilters = {
 }
 
 export interface IVisitRepository
-  extends IBaseRepository<Visit, VisitsFilters> {
+  extends IBaseRepository<Visit, VisitInsert, VisitsFilters> {
   findById(id: Visit["id"], session?: PersistenceSession): Promise<Visit | null>
   findByPatientId(patientId: Visit["patientId"]): Promise<Visit[]>
   create(visit: VisitInsert, createdBy: string): Promise<Visit>
-  update(visit: Visit): Promise<Visit>
   delete(id: Visit["id"]): Promise<Visit | null>
 }

@@ -16,7 +16,12 @@ import {
 import { BaseRepository } from "./base.repository"
 
 export class LocationRepository
-  extends BaseRepository<Location, LocationDocument, LocationsFilters>
+  extends BaseRepository<
+    Location,
+    LocationDocument,
+    LocationInsert,
+    LocationsFilters
+  >
   implements ILocationRepository
 {
   protected readonly model: Model<LocationDocument>
@@ -62,40 +67,28 @@ export class LocationRepository
     return mapLocationDocumentToEntity(location)
   }
 
-  async create(location: LocationInsert, createdBy: string): Promise<Location> {
-    const locationData = {
-      ...location,
-      createdBy,
-    }
-    const newLocation = await LocationModel.create(locationData)
-    if (!newLocation) {
-      throw new DatabaseOperationError("Error creating location")
-    }
-    return mapLocationDocumentToEntity(newLocation)!
-  }
+  // async update(location: Location): Promise<Location | null> {
+  //   try {
+  //     const locationData = {
+  //       ...location,
+  //       updatedBy: location.updatedBy,
+  //       updatedAt: new Date(),
+  //     }
 
-  async update(location: Location): Promise<Location | null> {
-    try {
-      const locationData = {
-        ...location,
-        updatedBy: location.updatedBy,
-        updatedAt: new Date(),
-      }
+  //     const updatedLocation = await LocationModel.findByIdAndUpdate(
+  //       location.id,
+  //       locationData
+  //     )
 
-      const updatedLocation = await LocationModel.findByIdAndUpdate(
-        location.id,
-        locationData
-      )
-
-      return mapLocationDocumentToEntity(updatedLocation)
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error"
-      throw new DatabaseOperationError(
-        `Error updating Location: ${errorMessage}`
-      )
-    }
-  }
+  //     return mapLocationDocumentToEntity(updatedLocation)
+  //   } catch (error) {
+  //     const errorMessage =
+  //       error instanceof Error ? error.message : "Unknown error"
+  //     throw new DatabaseOperationError(
+  //       `Error updating Location: ${errorMessage}`
+  //     )
+  //   }
+  // }
 
   async delete(id: Location["id"]): Promise<Location | null> {
     const deletedLocation = await LocationModel.findByIdAndDelete(id)

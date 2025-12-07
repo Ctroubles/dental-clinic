@@ -14,7 +14,7 @@ import { mapItemDocumentsToEntities, mapItemDocumentToEntity } from "../mappers"
 import { BaseRepository } from "./base.repository"
 
 export class ItemRepository
-  extends BaseRepository<Item, ItemDocument, ItemsFilters>
+  extends BaseRepository<Item, ItemDocument, ItemInsert, ItemsFilters>
   implements IItemRepository
 {
   protected readonly model: Model<ItemDocument>
@@ -86,37 +86,25 @@ export class ItemRepository
     return this.mapDocumentsToEntities(items)
   }
 
-  async create(item: ItemInsert, createdBy: string): Promise<Item> {
-    const itemData = {
-      ...item,
-      createdBy,
-    }
-    const newItem = await ItemModel.create(itemData)
-    if (!newItem) {
-      throw new DatabaseOperationError("Error creating item")
-    }
-    return this.mapDocumentToEntity(newItem)!
-  }
+  // async update(item: Item): Promise<Item | null> {
+  //   try {
+  //     const itemData = {
+  //       ...item,
+  //       updatedBy: item.updatedBy,
+  //     }
+  //     const updatedItem = await ItemModel.findByIdAndUpdate(item.id, itemData)
 
-  async update(item: Item): Promise<Item | null> {
-    try {
-      const itemData = {
-        ...item,
-        updatedBy: item.updatedBy,
-      }
-      const updatedItem = await ItemModel.findByIdAndUpdate(item.id, itemData)
+  //     if (!updatedItem) {
+  //       throw new DatabaseOperationError("Error updating item. Item not found")
+  //     }
 
-      if (!updatedItem) {
-        throw new DatabaseOperationError("Error updating item. Item not found")
-      }
-
-      return mapItemDocumentToEntity(updatedItem)
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error"
-      throw new DatabaseOperationError(`Error updating Item: ${errorMessage}`)
-    }
-  }
+  //     return mapItemDocumentToEntity(updatedItem)
+  //   } catch (error) {
+  //     const errorMessage =
+  //       error instanceof Error ? error.message : "Unknown error"
+  //     throw new DatabaseOperationError(`Error updating Item: ${errorMessage}`)
+  //   }
+  // }
 
   async delete(id: Item["id"]): Promise<Item | null> {
     const deletedItem = await ItemModel.findByIdAndDelete(id)

@@ -6,9 +6,8 @@ export type LocationsFilters = {
 }
 
 export interface ILocationRepository
-  extends IBaseRepository<Location, LocationsFilters> {
+  extends IBaseRepository<Location, LocationInsert, LocationsFilters> {
   findByName(name: Location["name"]): Promise<Location | null>
   create(location: LocationInsert, createdBy: string): Promise<Location>
-  update(location: Location): Promise<Location | null>
   delete(id: Location["id"]): Promise<Location | null>
 }

@@ -1,11 +1,12 @@
 import { type IGetPatientsUseCaseInput } from "@/application/use-cases/patients/get-patients.use-case"
 
-export const queryKeys = {
+export const patientKeys = {
   base: ["patients"] as const,
+  baseList: () => [...patientKeys.base, "list"] as const,
   list: (request?: IGetPatientsUseCaseInput) =>
-    [...queryKeys.base, "list", request] as const,
-  lookUp: (dni: string) => [...queryKeys.base, "lookUp", dni] as const,
-  detail: (id: string) => [...queryKeys.base, "detail", id] as const,
-  create: () => [...queryKeys.base, "create"] as const,
-  update: (id: string) => [...queryKeys.base, "update", id] as const,
+    [...patientKeys.baseList(), request] as const,
+  lookUp: (dni: string) => [...patientKeys.base, "lookUp", dni] as const,
+  detail: (id: string) => [...patientKeys.base, "detail", id] as const,
+  create: () => [...patientKeys.base, "create"] as const,
+  update: (id: string) => [...patientKeys.base, "update", id] as const,
 }

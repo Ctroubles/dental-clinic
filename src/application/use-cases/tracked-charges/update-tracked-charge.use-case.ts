@@ -12,34 +12,19 @@ export type IUpdateTrackedChargeUseCase = ReturnType<
 export const updateTrackedChargeUseCase =
   (trackedChargesRepository: ITrackedChargesRepository) =>
   async (
-    {
-      trackedChargeId,
-      updatedTrackedCharge,
-    }: { trackedChargeId: string; updatedTrackedCharge: TrackedChargeInsert },
+    { id, data }: { id: string; data: TrackedChargeInsert },
     userId: string
   ): Promise<TrackedCharge> => {
-    const existingTrackedCharge =
-      await trackedChargesRepository.findById(trackedChargeId)
+    const existingTrackedCharge = await trackedChargesRepository.findById(id)
 
     if (!existingTrackedCharge) {
-      throw new NotFoundError(
-        `Tracked charge with id ${trackedChargeId} not found`
-      )
+      throw new NotFoundError(`Tracked charge with id ${id} not found`)
     }
 
-    const trackedChargeToUpdate: TrackedCharge = {
-      ...existingTrackedCharge,
-      ...updatedTrackedCharge,
-      id: trackedChargeId,
-      updatedBy: userId,
-      updatedAt: new Date(),
-    }
-
-    const result = await trackedChargesRepository.update(trackedChargeToUpdate)
+    const result = await trackedChargesRepository.update(id, data, userId)
     if (!result) {
-      throw new NotFoundError(
-        `Tracked charge with id ${trackedChargeId} not found`
-      )
+      throw new NotFoundError(`Tracked charge with id ${id} not found`)
     }
+
     return result
   }

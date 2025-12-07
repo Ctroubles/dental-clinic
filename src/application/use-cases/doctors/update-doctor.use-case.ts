@@ -1,5 +1,5 @@
 import { IDoctorRepository } from "@/application/repositories/doctor.repository.interface"
-import { Doctor } from "@/domain/entities/doctor"
+import { Doctor, DoctorInsert } from "@/domain/entities/doctor"
 
 export type IUpdateDoctorUseCase = ReturnType<typeof updateDoctorUseCase>
 
@@ -7,16 +7,15 @@ export const updateDoctorUseCase =
   (doctorRepository: IDoctorRepository) =>
   async (
     input: {
-      doctor: Doctor
+      id: string
+      data: DoctorInsert
     },
-    userId: string
+    updatedBy: string
   ): Promise<Doctor | null> => {
-    const doctorToUpdate: Doctor = {
-      ...input.doctor,
-      updatedBy: userId,
-      updatedAt: new Date(),
-    }
-
-    const result = await doctorRepository.update(doctorToUpdate)
+    const result = await doctorRepository.update(
+      input.id,
+      input.data,
+      updatedBy
+    )
     return result
   }

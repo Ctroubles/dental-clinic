@@ -114,57 +114,6 @@ export class PaymentRepository
     })
   }
 
-  async create(
-    payment: PaymentInsert,
-    createdBy: string,
-    session?: ClientSession
-  ): Promise<Payment> {
-    try {
-      const paymentData = {
-        ...payment,
-        chargeId: payment.chargeId
-          ? new Types.ObjectId(payment.chargeId)
-          : null,
-        invoiceId: payment.invoiceId
-          ? new Types.ObjectId(payment.invoiceId)
-          : null,
-        createdBy: new Types.ObjectId(createdBy),
-      }
-      const result = session
-        ? await PaymentModel.create([paymentData], { session })
-        : await PaymentModel.create(paymentData)
-
-      const newPayment = Array.isArray(result) ? result[0] : result
-
-      if (!newPayment) {
-        throw new DatabaseOperationError("Error creating payment")
-      }
-      // Fetch the created payment with populated charge and invoice fields
-      const query = PaymentModel.findById(newPayment.id)
-        .populate({
-          path: "charge",
-          populate: [{ path: "patient" }, { path: "doctor" }, { path: "item" }],
-        })
-        .populate("invoice")
-
-      if (session) {
-        query.session(session)
-      }
-
-      const populatedPayment = await query
-      if (!populatedPayment) {
-        throw new DatabaseOperationError("Error fetching created payment")
-      }
-      const mappedPayment = mapPaymentDocumentToEntity(populatedPayment)
-      if (!mappedPayment) {
-        throw new DatabaseOperationError("Error mapping created payment")
-      }
-      return mappedPayment
-    } catch (error) {
-      throw new DatabaseOperationError(error)
-    }
-  }
-
   async createMany(
     payments: PaymentInsert[],
     createdBy: string,
@@ -173,18 +122,12 @@ export class PaymentRepository
     try {
       const paymentData = payments.map(payment => ({
         ...payment,
-        visitId: new Types.ObjectId(payment.visitId),
-        patientId: new Types.ObjectId(payment.patientId),
-        doctorId: new Types.ObjectId(payment.doctorId),
-        chargeId: new Types.ObjectId(payment.chargeId),
-        createdBy: new Types.ObjectId(createdBy),
-        invoiceId: payment.invoiceId
-          ? new Types.ObjectId(payment.invoiceId)
-          : null,
+        createdBy,
       }))
 
       const result = await PaymentModel.insertMany(paymentData, { session })
       logger.info("[PaymentRepository] Result of insert many", result)
+
       const newPayments = Array.isArray(result) ? result : [result]
 
       return mapPaymentDocumentsToEntities(newPayments) || []

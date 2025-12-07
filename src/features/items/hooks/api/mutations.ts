@@ -8,6 +8,7 @@ import {
   toggleItemStatus,
   updateItem,
 } from "@/features/items/requests"
+import { PageableResult } from "@/application/common/pagination"
 import { Item, ItemInsert } from "@/domain/entities/item"
 
 export const { useMut: useCreateItem } = makeMutation(() => {
@@ -20,9 +21,17 @@ export const { useMut: useCreateItem } = makeMutation(() => {
       toast.success("Item creado correctamente")
       queryClient.setQueryData(itemsQueryKeys.detail(newItem.id), newItem)
 
-      queryClient.setQueryData(itemsQueryKeys.list(), (oldData: Item[]) => {
-        return [newItem, ...(oldData || [])]
-      })
+      queryClient.setQueryData(
+        itemsQueryKeys.list(),
+        (oldData: PageableResult<Item>) => {
+          console.log(oldData)
+          return {
+            ...oldData,
+            records: [newItem, ...(oldData?.records || [])],
+            totalRecords: (oldData?.totalRecords || 0) + 1,
+          } satisfies PageableResult<Item>
+        }
+      )
     },
   }
 })
@@ -40,8 +49,13 @@ export const { useMut: useUpdateItem } = makeMutation(() => {
 
       queryClient.setQueryData(
         itemsQueryKeys.list(),
-        (oldData: Item[] | undefined) => {
-          return oldData?.map(item => (item.id === itemId ? itemData : item))
+        (oldData: PageableResult<Item>) => {
+          return {
+            ...oldData,
+            records: oldData?.records?.map(item =>
+              item.id === itemId ? itemData : item
+            ),
+          } satisfies PageableResult<Item>
         }
       )
     },
@@ -62,9 +76,11 @@ export const { useMut: useDeleteItem } = makeMutation(() => {
 
       queryClient.setQueryData(
         itemsQueryKeys.list(),
-        (oldData: Item[] | undefined) => {
-          if (!oldData) return oldData
-          return oldData.filter(item => item.id !== itemId)
+        (oldData: PageableResult<Item>) => {
+          return {
+            ...oldData,
+            records: oldData?.records?.filter(item => item.id !== itemId),
+          } satisfies PageableResult<Item>
         }
       )
     },
@@ -82,9 +98,13 @@ export const { useMut: useToggleItemStatus } = makeMutation(() => {
 
       queryClient.setQueryData(
         itemsQueryKeys.list(),
-        (oldData: Item[] | undefined) => {
-          if (!oldData) return oldData
-          return oldData.map(item => (item.id === itemId ? itemData : item))
+        (oldData: PageableResult<Item>) => {
+          return {
+            ...oldData,
+            records: oldData?.records?.map(item =>
+              item.id === itemId ? itemData : item
+            ),
+          } satisfies PageableResult<Item>
         }
       )
     },

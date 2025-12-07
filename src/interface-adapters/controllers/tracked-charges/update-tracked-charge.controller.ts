@@ -24,26 +24,26 @@ export const updateTrackedChargeController =
   (updateTrackedChargeUseCase: IUpdateTrackedChargeUseCase) =>
   async (
     input: {
-      trackedChargeId: string
-      updatedTrackedCharge: TrackedChargeInsert
+      id: string
+      data: TrackedChargeInsert
     },
-    userId: string
+    updatedBy: string
   ): Promise<DataResult<TrackedCharge>> => {
     const { data, error: parseError } = trackedChargeInsertSchema.safeParse(
-      input.updatedTrackedCharge
+      input.data
     )
+
     if (parseError) {
       return DataResult.failure(new ValidationError(parseError))
     }
     const response = await updateTrackedChargeUseCase(
-      { trackedChargeId: input.trackedChargeId, updatedTrackedCharge: data },
-      userId
+      { id: input.id, data },
+      updatedBy
     )
+
     if (!response) {
       return DataResult.failure(
-        new NotFoundError(
-          `Tracked charge con ID ${input.trackedChargeId} no encontrado.`
-        )
+        new NotFoundError(`Tracked charge con ID ${input.id} no encontrado.`)
       )
     }
     return DataResult.success(presenter(response))

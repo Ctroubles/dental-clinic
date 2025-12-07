@@ -81,9 +81,9 @@ export default function ItemForm({
     if (isItem(initialData)) {
       await updateItem({ itemId: initialData.id, item: values })
     } else {
-      const response = await createItem(values)
-      router.push("/admin/items")
+      await createItem(values)
     }
+    router.push("/admin/items")
   }
 
   async function handleDelete() {

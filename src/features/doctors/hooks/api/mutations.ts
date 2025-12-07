@@ -13,7 +13,10 @@ export const { useMut: useCreateDoctor } = makeMutation(() => {
     mutationKey: queryKeys.create(),
     onSuccess: () => {
       toast.success("Doctor creado correctamente")
-      queryClient.invalidateQueries({ queryKey: queryKeys.list() })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.baseList(),
+        exact: false,
+      })
     },
   }
 })
@@ -29,9 +32,15 @@ export const { useMut: useUpdateDoctor } = makeMutation(() => {
       doctorId: string
       doctor: DoctorInsert
     }) => updateDoctor(doctorId, doctor),
-    onSuccess: (_, { doctorId }) => {
+    onSuccess: (newDoctor, { doctorId }) => {
       toast.success("Doctor actualizado correctamente")
-      queryClient.invalidateQueries({ queryKey: queryKeys.list() })
+
+      queryClient.setQueryData(queryKeys.detail(doctorId), newDoctor)
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.baseList(),
+        exact: false,
+      })
     },
   }
 })

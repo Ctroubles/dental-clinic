@@ -27,10 +27,7 @@ export const PUT = createSecureContext(
     const { visitId } = await params
     const data = await req.json()
 
-    return await updateVisitController(
-      { visit: { ...data, id: visitId } },
-      user.dbUserId
-    )
+    return await updateVisitController({ id: visitId, data }, user.dbUserId)
   }
 )
 

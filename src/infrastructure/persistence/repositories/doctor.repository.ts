@@ -17,7 +17,7 @@ import {
 import { BaseRepository } from "./base.repository"
 
 export class DoctorRepository
-  extends BaseRepository<Doctor, DoctorDocument, DoctorsFilters>
+  extends BaseRepository<Doctor, DoctorDocument, DoctorInsert, DoctorsFilters>
   implements IDoctorRepository
 {
   protected readonly model: Model<DoctorDocument>
@@ -75,49 +75,27 @@ export class DoctorRepository
     }
   }
 
-  async create(doctor: DoctorInsert, createdBy: string): Promise<Doctor> {
-    try {
-      const doctorData = {
-        ...doctor,
-        createdBy,
-      }
-      const newDoctor = await DoctorModel.create(doctorData)
-      if (!newDoctor) {
-        throw new DatabaseOperationError("No se pudo crear el doctor.")
-      }
-      const newDoctorEntity = mapDoctorDocumentToEntity(newDoctor)
-      if (!newDoctorEntity) {
-        throw new DatabaseOperationError("No se pudo mapear el doctor.")
-      }
+  // async update(doctor: Doctor): Promise<Doctor | null> {
+  //   try {
+  //     const doctorData = {
+  //       ...doctor,
+  //       updatedBy: doctor.updatedBy?.toString(),
+  //       updatedAt: new Date(),
+  //     }
+  //     const updatedDoctor = await DoctorModel.findByIdAndUpdate(
+  //       doctor.id,
+  //       doctorData
+  //     )
 
-      return newDoctorEntity
-    } catch (error) {
-      logger.error("[DoctorRepository] Error creating doctor", error)
-      throw new DatabaseOperationError(error)
-    }
-  }
-
-  async update(doctor: Doctor): Promise<Doctor | null> {
-    try {
-      const doctorData = {
-        ...doctor,
-        updatedBy: doctor.updatedBy?.toString(),
-        updatedAt: new Date(),
-      }
-      const updatedDoctor = await DoctorModel.findByIdAndUpdate(
-        doctor.id,
-        doctorData
-      )
-
-      if (!updatedDoctor) {
-        return null
-      }
-      return mapDoctorDocumentToEntity(updatedDoctor)
-    } catch (error) {
-      logger.error("[DoctorRepository] Error updating doctor", error)
-      throw new DatabaseOperationError(error)
-    }
-  }
+  //     if (!updatedDoctor) {
+  //       return null
+  //     }
+  //     return mapDoctorDocumentToEntity(updatedDoctor)
+  //   } catch (error) {
+  //     logger.error("[DoctorRepository] Error updating doctor", error)
+  //     throw new DatabaseOperationError(error)
+  //   }
+  // }
 
   async delete(id: Doctor["id"]): Promise<void> {
     try {

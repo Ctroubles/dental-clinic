@@ -25,6 +25,7 @@ export class TrackedChargesRepository
   extends BaseRepository<
     TrackedCharge,
     TrackedChargesDocument,
+    TrackedChargeInsert,
     TrackedChargesFilters
   >
   implements ITrackedChargesRepository
@@ -130,55 +131,6 @@ export class TrackedChargesRepository
     return populateConfig
   }
 
-  async create(
-    trackedCharge: TrackedChargeInsert,
-    createdBy: string,
-    session?: ClientSession
-  ): Promise<TrackedCharge> {
-    try {
-      const chargeData = {
-        ...trackedCharge,
-        patientId: trackedCharge.patientId,
-        doctorId: trackedCharge.doctorId,
-        itemId: trackedCharge.itemId,
-        createdBy,
-      }
-
-      const result = session
-        ? await TrackedChargesModel.create([chargeData], { session })
-        : await TrackedChargesModel.create(chargeData)
-
-      const newCharge = Array.isArray(result) ? result[0] : result
-      if (!newCharge) {
-        throw new DatabaseOperationError("Error creating tracked charge")
-      }
-
-      // Fetch the created charge with populated fields
-      const query = TrackedChargesModel.findById(newCharge.id)
-        .populate("patient")
-        .populate("doctor")
-        .populate("item")
-      if (session) {
-        query.session(session)
-      }
-      const populatedCharge = await query
-      if (!populatedCharge) {
-        throw new DatabaseOperationError(
-          "Error fetching created tracked charge"
-        )
-      }
-      const mappedCharge = mapTrackedChargesDocumentToEntity(populatedCharge)
-      if (!mappedCharge) {
-        throw new DatabaseOperationError("Error mapping created tracked charge")
-      }
-      return mappedCharge
-    } catch (error) {
-      const errMsg =
-        (error as Error)?.message ||
-        "Error desconocido en la base de datos al crear el cargo."
-      throw new DatabaseOperationError(errMsg)
-    }
-  }
   async getAll(filters?: TrackedChargesFilters): Promise<TrackedCharge[]> {
     // Build base query
     const query: Record<string, unknown> & {
@@ -456,41 +408,6 @@ export class TrackedChargesRepository
       .populate("item")
 
     return mapTrackedChargesDocumentsToEntities(charges) ?? []
-  }
-
-  async update(
-    trackedCharge: TrackedCharge,
-    session?: ClientSession
-  ): Promise<TrackedCharge> {
-    const chargeData = {
-      ...trackedCharge,
-      patientId: trackedCharge.patientId,
-      doctorId: trackedCharge.doctorId,
-      itemId: trackedCharge.itemId,
-      updatedBy: trackedCharge.updatedBy,
-    }
-    const query = TrackedChargesModel.findByIdAndUpdate(
-      trackedCharge.id,
-      chargeData
-    )
-      .populate("patient")
-      .populate("doctor")
-      .populate("item")
-
-    if (session) {
-      query.session(session)
-    }
-
-    const updatedCharge = await query
-
-    const mappedCharge = mapTrackedChargesDocumentToEntity(updatedCharge)
-    if (!mappedCharge) {
-      throw new DatabaseOperationError(
-        "Error updating tracked charge. The result of the update operation was falsy."
-      )
-    }
-
-    return mappedCharge
   }
 
   async delete(id: TrackedCharge["id"]): Promise<void> {

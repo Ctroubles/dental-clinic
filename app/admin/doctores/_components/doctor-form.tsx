@@ -74,9 +74,9 @@ export default function DoctorForm({
     if (isDoctor(initialData)) {
       await updateDoctor({ doctorId: initialData.id, doctor: values })
     } else {
-      const response = await createDoctor(values)
-      router.push(`/admin/doctores/${response.id}`)
+      await createDoctor(values)
     }
+    router.push(`/admin/doctores`)
   }
 
   const getFullName = (): string => {

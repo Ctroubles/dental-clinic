@@ -77,7 +77,11 @@ export function PageableDataTable<TData>({
   })
 
   return (
-    <DataTable table={table} isLoading={isLoading}>
+    <DataTable
+      table={table}
+      totalRecords={data?.totalRecords}
+      isLoading={isLoading}
+    >
       <DataTableToolbar table={table} />
     </DataTable>
   )

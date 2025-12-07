@@ -2,8 +2,9 @@ import { IGetDoctorsUseCaseInput } from "@/application/use-cases/doctors/get-doc
 
 export const queryKeys = {
   base: ["doctors"] as const,
+  baseList: () => [...queryKeys.base, "list"] as const,
   list: (request?: IGetDoctorsUseCaseInput) =>
-    [...queryKeys.base, "list", request] as const,
+    [...queryKeys.baseList(), request] as const,
   detail: (id: string) => [...queryKeys.base, "detail", id] as const,
   create: () => [...queryKeys.base, "create"] as const,
   update: (id: string) => [...queryKeys.base, "update", id] as const,

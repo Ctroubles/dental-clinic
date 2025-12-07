@@ -23,10 +23,7 @@ export const PUT = createSecureContext(
     const { id } = await params
     const data = await req.json()
     const updateLocationController = getInjection("IUpdateLocationController")
-    return updateLocationController(
-      { location: { ...data, id, updatedBy: context.user.id } },
-      context.user.dbUserId
-    )
+    return updateLocationController({ id, data }, context.user.dbUserId)
   }
 )
 

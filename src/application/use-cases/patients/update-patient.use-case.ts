@@ -1,4 +1,4 @@
-import { NotFoundError } from "@/application/errors"
+import { NotFoundError, ValidationError } from "@/application/errors"
 import { IPatientRepository } from "@/application/repositories/patient.repository.interface"
 import { Patient, PatientInsert } from "@/domain/entities/patient"
 
@@ -7,29 +7,43 @@ export type IUpdatePatientUseCase = ReturnType<typeof updatePatientUseCase>
 export const updatePatientUseCase =
   (patientRepository: IPatientRepository) =>
   async (
-    {
-      patientId,
-      updatedPatient,
-    }: { patientId: string; updatedPatient: PatientInsert },
+    { id, data }: { id: string; data: PatientInsert },
     userId: string
   ): Promise<Patient> => {
-    const existingPatient = await patientRepository.findById(patientId)
+    const session = await patientRepository.startSession()
+    try {
+      session.startTransaction()
+      const currentPatient = await patientRepository.findById(id, session)
 
-    if (!existingPatient) {
-      throw new NotFoundError(`Paciente con id ${patientId} no encontrado`)
-    }
+      if (!currentPatient) {
+        throw new NotFoundError(`Paciente con id ${id} no encontrado`)
+      }
 
-    const patientToUpdate: Patient = {
-      ...existingPatient,
-      ...updatedPatient,
-      id: patientId,
-      updatedBy: userId,
-      updatedAt: new Date(),
-    }
+      if (currentPatient.dni !== data.dni) {
+        const existingPatient = await patientRepository.findOne(
+          { dni: data.dni },
+          session
+        )
 
-    const result = await patientRepository.update(patientToUpdate)
-    if (!result) {
-      throw new NotFoundError(`Paciente con id ${patientId} no encontrado`)
+        if (existingPatient) {
+          throw new ValidationError(`El paciente con DNI ${data.dni} ya existe`)
+        }
+      }
+
+      const result = await patientRepository.update(id, data, userId)
+
+      if (!result) {
+        throw new NotFoundError(
+          `Hubo un error al actualizar el paciente. Es posible que el paciente haya sido eliminado.`
+        )
+      }
+
+      session.commitTransaction()
+
+      return result
+    } catch (error) {
+      session.abortTransaction()
+      session.endSession()
+      throw error
     }
-    return result
   }

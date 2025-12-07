@@ -9,13 +9,10 @@ export type IToggleItemStatusUseCase = ReturnType<
 export const toggleItemStatusUseCase =
   (itemRepository: IItemRepository) =>
   async ({ itemId }: { itemId: string }, userId: string): Promise<Item> => {
-    console.log("[toggleItemStatusUseCase] itemId", itemId)
     const existingItem = await itemRepository.findById(itemId)
 
-    console.log("[toggleItemStatusUseCase] foundItem", existingItem)
     if (!existingItem) {
-      console.log("[toggleItemStatusUseCase] Item not found", itemId)
-      throw new NotFoundError(`Item with id ${itemId} not found`)
+      throw new NotFoundError(`Item con id ${itemId} no encontrado`)
     }
 
     const itemToUpdate: Item = {
@@ -25,11 +22,9 @@ export const toggleItemStatusUseCase =
       updatedAt: new Date(),
     }
 
-    const result = await itemRepository.update(itemToUpdate)
-    console.log("[toggleItemStatusUseCase] result", result)
+    const result = await itemRepository.update(itemId, itemToUpdate, userId)
     if (!result) {
-      throw new NotFoundError(`Item with id ${itemId} not found`)
+      throw new NotFoundError(`Item con id ${itemId} no encontrado`)
     }
-    console.log("[toggleItemStatusUseCase] returning result", result)
     return result
   }

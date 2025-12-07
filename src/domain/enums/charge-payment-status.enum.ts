@@ -11,3 +11,5 @@ export const ChargePaymentStatusEnum = z.enum(
     }),
   }
 )
+
+export type ChargePaymentStatus = z.infer<typeof ChargePaymentStatusEnum>

@@ -7,9 +7,7 @@ export type DoctorsFilters = {
 }
 
 export interface IDoctorRepository
-  extends IBaseRepository<Doctor, DoctorsFilters> {
+  extends IBaseRepository<Doctor, DoctorInsert, DoctorsFilters> {
   findByUserId(userId: string): Promise<Doctor | null>
-  create(doctor: DoctorInsert, createdBy: string): Promise<Doctor>
-  update(doctor: Doctor): Promise<Doctor | null>
   delete(id: Doctor["id"]): Promise<void>
 }
