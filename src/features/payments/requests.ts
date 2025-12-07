@@ -9,8 +9,8 @@ export async function getPayments(rawRequest?: IGetAllPaymentsUseCaseInput) {
   let queryURL: string = ""
 
   if (rawRequest) {
-    const request = {...rawRequest, ...(rawRequest.filters || {})}
-    queryURL = serializePaymentFilters(request)
+    const { filters, ...rest } = rawRequest
+    queryURL = serializePaymentFilters({ ...rest, ...(filters || {}) })
   }
 
   const url = queryURL ? `payments${queryURL}` : "payments"
