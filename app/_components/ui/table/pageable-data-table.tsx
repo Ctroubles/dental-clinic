@@ -1,4 +1,3 @@
-import { useMemo } from "react"
 import { type ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "~/app/_components/ui/table/data-table"
 import { DataTableToolbar } from "~/app/_components/ui/table/data-table-toolbar"

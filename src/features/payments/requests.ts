@@ -4,7 +4,6 @@ import { type IGetAllPaymentsUseCaseInput } from "@/application/use-cases/paymen
 import { Payment } from "@/domain/entities/payment"
 import { serializePaymentFilters } from "./helpers"
 
-
 export async function getPayments(rawRequest?: IGetAllPaymentsUseCaseInput) {
   let queryURL: string = ""
 
@@ -13,11 +12,12 @@ export async function getPayments(rawRequest?: IGetAllPaymentsUseCaseInput) {
     queryURL = serializePaymentFilters({ ...rest, ...(filters || {}) })
   }
 
-  const url = queryURL ? `payments${queryURL}` : "payments"
-
-  const response = await apiFetch<PageableResult<Payment>>(url, {
-    method: "GET",
-  })
+  const response = await apiFetch<PageableResult<Payment>>(
+    `payments${queryURL}`,
+    {
+      method: "GET",
+    }
+  )
   return response
 }
 

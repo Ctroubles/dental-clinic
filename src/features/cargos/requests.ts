@@ -1,6 +1,6 @@
 import { apiFetch } from "~/lib/api/apiFetch"
 import { PageableResult } from "@/application/common/pagination"
-import { IGetTrackedChargesUseCaseInput } from "@/application/use-cases/tracked-charges/get-tracked-charges.use-case"
+import { type IGetTrackedChargesUseCaseInput } from "@/application/use-cases/tracked-charges/get-tracked-charges.use-case"
 import {
   RegisterChargesForVisitInput,
   RegisterChargesForVisitResult,
@@ -9,7 +9,7 @@ import {
   TrackedCharge,
   TrackedChargeInsert,
 } from "@/domain/entities/tracked-charge"
-import { CargosFilters } from "./types"
+import { serializeCargoFilters } from "./helpers"
 
 export async function createCargo(cargo: TrackedChargeInsert) {
   const response = await apiFetch<TrackedCharge>("tracked-charges", {
@@ -19,44 +19,20 @@ export async function createCargo(cargo: TrackedChargeInsert) {
   return response
 }
 
-export async function getCargos(request: IGetTrackedChargesUseCaseInput) {
-  const searchParams = new URLSearchParams()
+export async function getCargos(rawRequest: IGetTrackedChargesUseCaseInput) {
+  let queryURL: string = ""
 
-  if (request.filters?.search) {
-    searchParams.set("search", request.filters.search)
-  }
-  if (request.filters?.patientId) {
-    searchParams.set("patientId", request.filters.patientId)
-  }
-  if (request.filters?.doctorId) {
-    searchParams.set("doctorId", request.filters.doctorId)
-  }
-  if (request.filters?.itemId) {
-    searchParams.set("itemId", request.filters.itemId)
-  }
-  if (request.filters?.type) {
-    searchParams.set("type", request.filters.type)
-  }
-  if (request.filters?.paymentStatus) {
-    searchParams.set("paymentStatus", request.filters.paymentStatus)
-  }
-  if (request.filters?.progressStatus) {
-    searchParams.set("progressStatus", request.filters.progressStatus)
+  if (rawRequest) {
+    const { filters, ...rest } = rawRequest
+    queryURL = serializeCargoFilters({ ...rest, ...(filters || {}) })
   }
 
-  if (request.page) {
-    searchParams.set("page", request.page.toString())
-  }
-  if (request.pageSize) {
-    searchParams.set("pageSize", request.pageSize.toString())
-  }
-
-  const queryString = searchParams.toString()
-  const url = queryString ? `tracked-charges?${queryString}` : "tracked-charges"
-
-  const response = await apiFetch<PageableResult<TrackedCharge>>(url, {
-    method: "GET",
-  })
+  const response = await apiFetch<PageableResult<TrackedCharge>>(
+    `tracked-charges${queryURL}`,
+    {
+      method: "GET",
+    }
+  )
   return response
 }
 

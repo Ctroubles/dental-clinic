@@ -1,4 +1,3 @@
-import { PaymentMethodEnum } from "@/domain/enums";
 import {
   createLoader,
   createSerializer,
@@ -6,13 +5,14 @@ import {
   parseAsInteger,
   parseAsString,
   parseAsStringEnum,
-} from "nuqs/server";
+} from "nuqs/server"
+import { PaymentMethodEnum } from "@/domain/enums"
 
 export const paymentParserFilters = {
   page: parseAsInteger.withDefault(1),
   pageSize: parseAsInteger.withDefault(10),
-  method: parseAsArrayOf(parseAsStringEnum(PaymentMethodEnum.options)),
   search: parseAsString,
+  method: parseAsArrayOf(parseAsStringEnum(PaymentMethodEnum.options)),
   patientId: parseAsString,
   doctorId: parseAsString,
   chargeId: parseAsString,
@@ -21,4 +21,4 @@ export const paymentParserFilters = {
 
 export const loadPaymentFilters = createLoader(paymentParserFilters)
 
-export const serializePaymentFilters = createSerializer(paymentParserFilters);
+export const serializePaymentFilters = createSerializer(paymentParserFilters)

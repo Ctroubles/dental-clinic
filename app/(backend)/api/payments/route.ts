@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server"
 import { getInjection } from "di/container"
 import { createSecureContext } from "~/lib/api/middleware"
-import { type IGetAllPaymentsUseCaseInput } from "@/application/use-cases/payments/get-all-payments.use-case"
 import { loadPaymentFilters } from "@/features/payments/helpers/parsers"
+import { type IGetAllPaymentsUseCaseInput } from "@/application/use-cases/payments/get-all-payments.use-case"
 
 export const GET = createSecureContext((req: NextRequest) => {
   const searchParams = req.nextUrl.searchParams

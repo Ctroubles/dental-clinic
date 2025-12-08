@@ -18,7 +18,7 @@ export abstract class BaseRepository<
   protected abstract mapDocumentToEntity(doc: TDocument | null): TEntity | null
   protected abstract mapDocumentsToEntities(docs: TDocument[]): TEntity[] | null
   protected abstract buildQuery(
-    test?: TFilters
+    filters?: TFilters
   ): Promise<Record<string, unknown>>
   protected abstract getPopulateConfig(
     includes?: Array<keyof TEntity>
