@@ -1,34 +1,31 @@
 import { NextRequest } from "next/server"
 import { getInjection } from "di/container"
 import { ApiContext, createSecureContext } from "~/lib/api/middleware"
+import { loadCargoFilters } from "@/features/cargos/helpers"
 import { type IGetTrackedChargesUseCaseInput } from "@/application/use-cases/tracked-charges/get-tracked-charges.use-case"
-import {
-  ChargePaymentStatus,
-  ChargeProgressStatus,
-  ItemType,
-} from "@/domain/enums"
 
 export const GET = createSecureContext((req: NextRequest) => {
+  const searchParams = req.nextUrl.searchParams
+
+  const rawInput = loadCargoFilters(searchParams)
+
+  const input: IGetTrackedChargesUseCaseInput = {
+    filters: {
+      search: rawInput.search,
+      patientId: rawInput.patientId,
+      doctorId: rawInput.doctorId,
+      itemId: rawInput.itemId,
+      type: rawInput.type,
+      paymentStatus: rawInput.paymentStatus,
+      progressStatus: rawInput.progressStatus,
+    },
+    page: rawInput.page,
+    pageSize: rawInput.pageSize,
+  }
+
   const getTrackedChargesController = getInjection(
     "IGetTrackedChargesController"
   )
-  const input: IGetTrackedChargesUseCaseInput = {
-    filters: {
-      search: req.nextUrl.searchParams.get("search") || undefined,
-      patientId: req.nextUrl.searchParams.get("patientId") || undefined,
-      doctorId: req.nextUrl.searchParams.get("doctorId") || undefined,
-      itemId: req.nextUrl.searchParams.get("itemId") || undefined,
-      type: req.nextUrl.searchParams.get("type") as ItemType | undefined,
-      paymentStatus: req.nextUrl.searchParams.get("paymentStatus") as
-        | ChargePaymentStatus
-        | undefined,
-      progressStatus: req.nextUrl.searchParams.get("progressStatus") as
-        | ChargeProgressStatus
-        | undefined,
-    },
-    page: Number(req.nextUrl.searchParams.get("page")) || 1,
-    pageSize: Number(req.nextUrl.searchParams.get("pageSize")) || 10,
-  }
   return getTrackedChargesController(input)
 })
 

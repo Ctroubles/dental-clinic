@@ -1,8 +1,6 @@
-import { Suspense } from "react"
 import PageContainer from "~/app/_components/layout/page-container"
 import { Heading } from "~/app/_components/ui/heading"
 import { Separator } from "~/app/_components/ui/separator"
-import { DataTableSkeleton } from "~/app/_components/ui/table/data-table-skeleton"
 import PaymentsListingPage from "~/app/admin/pagos/_components/payment-listing"
 
 export const metadata = {

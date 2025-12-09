@@ -15,9 +15,9 @@ export type TrackedChargesFilters = {
   patientId?: string | null
   doctorId?: string | null
   itemId?: string | null
-  type?: ItemType | null
-  paymentStatus?: ChargePaymentStatus | null
-  progressStatus?: ChargeProgressStatus | null
+  type?: ItemType[] | null
+  paymentStatus?: ChargePaymentStatus[] | null
+  progressStatus?: ChargeProgressStatus[] | null
 }
 
 export interface ITrackedChargesRepository

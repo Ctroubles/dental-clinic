@@ -1,20 +1,15 @@
 "use client"
 
-import Link from "next/link"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react"
+import { ArrowUpDown } from "lucide-react"
 import { Badge } from "~/app/_components/ui/badge"
 import { Button } from "~/app/_components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/app/_components/ui/dropdown-menu"
 import { dateToHumanReadable, getEntityFullname } from "~/lib/utils"
 import { TrackedCharge } from "@/domain/entities/tracked-charge"
+import {
+  ChargePaymentStatusEnum,
+  ChargeProgressStatusEnum,
+} from "@/domain/enums"
 import {
   calculateRemainingAmount,
   formatCurrency,
@@ -144,6 +139,7 @@ export const columns: ColumnDef<TrackedCharge>[] = [
     },
   },
   {
+    id: "paymentStatus",
     accessorKey: "paymentStatus",
     header: "Estado Pago",
     cell: ({ row }) => {
@@ -156,11 +152,22 @@ export const columns: ColumnDef<TrackedCharge>[] = [
         </Badge>
       )
     },
+    enableColumnFilter: true,
     meta: {
       label: "Estado Pago",
+      variant: "multiSelect",
+      options: [
+        { label: "Pagado", value: ChargePaymentStatusEnum.Values.paid },
+        {
+          label: "Parcial",
+          value: ChargePaymentStatusEnum.Values.partiallyPaid,
+        },
+        { label: "Pendiente", value: ChargePaymentStatusEnum.Values.unpaid },
+      ],
     },
   },
   {
+    id: "progressStatus",
     accessorKey: "progressStatus",
     header: "Progreso",
     cell: ({ row }) => {
@@ -172,6 +179,25 @@ export const columns: ColumnDef<TrackedCharge>[] = [
           {getChargeProgressStatusLabel(status)}
         </Badge>
       )
+    },
+    enableColumnFilter: true,
+    meta: {
+      label: "Progreso",
+      variant: "multiSelect",
+      options: [
+        {
+          label: "Completado",
+          value: ChargeProgressStatusEnum.Values.completed,
+        },
+        {
+          label: "En proceso",
+          value: ChargeProgressStatusEnum.Values.inProgress,
+        },
+        {
+          label: "Cancelado",
+          value: ChargeProgressStatusEnum.Values.cancelled,
+        },
+      ],
     },
   },
   {
