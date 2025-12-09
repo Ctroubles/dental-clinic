@@ -146,8 +146,8 @@ export class TrackedChargesRepository
       query.doctorId = filters.doctorId
     }
 
-    if (filters?.itemId?.length) {
-      query.itemId = { $in: filters.itemId }
+    if (filters?.itemId) {
+      query.itemId = filters.itemId
     }
 
     if (filters?.type?.length) {
