@@ -60,7 +60,7 @@ export class TrackedChargesRepository
       query.doctorId = filters.doctorId
     }
 
-    if (filters?.itemId?.length) {
+    if (filters?.itemId) {
       query.itemId = filters.itemId
     }
 
