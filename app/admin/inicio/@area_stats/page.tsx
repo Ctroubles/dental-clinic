@@ -1,5 +1,5 @@
-import { AreaGraph } from "~/app/_components/overview/components/area-graph"
+import { AreaGraph } from "~/app/admin/inicio/_components/monthly-visits-graph"
 
-export default async function AreaStats() {
+export default function AreaStats() {
   return <AreaGraph />
 }

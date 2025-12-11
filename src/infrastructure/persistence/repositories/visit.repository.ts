@@ -161,31 +161,35 @@ export class VisitRepository
     }
   }
 
-  // async update(visit: Visit): Promise<Visit> {
-  //   try {
-  //     const visitData = {
-  //       ...visit,
-  //       updatedBy: visit.updatedBy?.toString(),
-  //     }
-  //     const updatedVisit = await VisitModel.findByIdAndUpdate(
-  //       visit.id,
-  //       visitData
-  //     )
-  //       .populate("patient")
-  //       .populate("doctor")
-
-  //     const mappedVisit = mapVisitDocumentToEntity(updatedVisit)
-  //     if (!mappedVisit) {
-  //       throw new DatabaseOperationError(
-  //         "Error updating visit. The result of the update operation was falsy."
-  //       )
-  //     }
-  //     return mappedVisit
-  //   } catch (error) {
-  //     logger.error("[VisitRepository] Error updating visit", error)
-  //     throw new DatabaseOperationError(error)
-  //   }
-  // }
+  async create(visit: VisitInsert, createdBy: string): Promise<Visit> {
+    try {
+      const visitData = {
+        ...visit,
+        patientId: new Types.ObjectId(visit.patientId),
+        doctorId: new Types.ObjectId(visit.doctorId),
+        createdBy,
+      }
+      const newVisit = await VisitModel.create(visitData)
+      if (!newVisit) {
+        throw new DatabaseOperationError("Error creating visit")
+      }
+      // Fetch the created visit with populated fields
+      const populatedVisit = await VisitModel.findById(newVisit.id)
+        .populate("patient")
+        .populate("doctor")
+      if (!populatedVisit) {
+        throw new DatabaseOperationError("Error fetching created visit")
+      }
+      const mappedVisit = mapVisitDocumentToEntity(populatedVisit)
+      if (!mappedVisit) {
+        throw new DatabaseOperationError("Error mapping created visit")
+      }
+      return mappedVisit
+    } catch (error) {
+      logger.error("[VisitRepository] Error creating visit", error)
+      throw new DatabaseOperationError(error)
+    }
+  }
 
   async delete(id: Visit["id"]): Promise<Visit | null> {
     try {

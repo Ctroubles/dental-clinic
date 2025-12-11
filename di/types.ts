@@ -1,3 +1,4 @@
+import { type IAnalyticsRepository } from "@/application/repositories/analytics.repository.interface"
 import { type IDoctorRepository } from "@/application/repositories/doctor.repository.interface"
 import { type IItemRepository } from "@/application/repositories/item.repository.interface"
 import { type ILocationRepository } from "@/application/repositories/location.repository.interface"
@@ -5,6 +6,11 @@ import { IPatientRepository } from "@/application/repositories/patient.repositor
 import { type IPaymentRepository } from "@/application/repositories/payment.repository.interface"
 import { type ITrackedChargesRepository } from "@/application/repositories/tracked-charges.repository.interface"
 import { type IVisitRepository } from "@/application/repositories/visit.repository.interface"
+import { type IGetAnalyticsOverviewUseCase } from "@/application/use-cases/analytics/get-analytics-overview.use-case"
+import { type IGetDailyRevenueUseCase } from "@/application/use-cases/analytics/get-daily-revenue.use-case"
+import { type IGetMonthlyVisitsUseCase } from "@/application/use-cases/analytics/get-monthly-visits.use-case"
+import { type IGetRecentPaymentsUseCase } from "@/application/use-cases/analytics/get-recent-payments.use-case"
+import { type IGetTopServicesUseCase } from "@/application/use-cases/analytics/get-top-services.use-case"
 import { ICreateDoctorUseCase } from "@/application/use-cases/doctors/create-doctor.use-case"
 import { type IDeleteDoctorUseCase } from "@/application/use-cases/doctors/delete-doctor.use-case"
 import { type IGetDoctorUseCase } from "@/application/use-cases/doctors/get-doctor.use-case"
@@ -42,6 +48,11 @@ import { type IGetVisitsByPatientUseCase } from "@/application/use-cases/visits/
 import { type IGetVisitsUseCase } from "@/application/use-cases/visits/get-visits.use-case"
 import { type IRegisterChargesForVisitUseCase } from "@/application/use-cases/visits/register-charges-for-visit"
 import { type IUpdateVisitUseCase } from "@/application/use-cases/visits/update-visit.use-case"
+import { type IGetAnalyticsOverviewController } from "@/interface-adapters/controllers/analytics/get-analytics-overview.controller"
+import { type IGetDailyRevenueController } from "@/interface-adapters/controllers/analytics/get-daily-revenue.controller"
+import { type IGetMonthlyVisitsController } from "@/interface-adapters/controllers/analytics/get-monthly-visits.controller"
+import { type IGetRecentPaymentsController } from "@/interface-adapters/controllers/analytics/get-recent-payments.controller"
+import { type IGetTopServicesController } from "@/interface-adapters/controllers/analytics/get-top-services.controller"
 import { ICreateDoctorController } from "@/interface-adapters/controllers/doctors/create-doctor.controller"
 import { type IDeleteDoctorController } from "@/interface-adapters/controllers/doctors/delete-doctor.controller"
 import { type IGetDoctorController } from "@/interface-adapters/controllers/doctors/get-doctor.controller"
@@ -89,6 +100,7 @@ export const DI_SYMBOLS = {
   ITrackedChargesRepository: Symbol.for("ITrackedChargesRepository"),
   IVisitRepository: Symbol.for("IVisitRepository"),
   ILocationRepository: Symbol.for("ILocationRepository"),
+  IAnalyticsRepository: Symbol.for("IAnalyticsRepository"),
 
   // Use Cases
   ICreateDoctorUseCase: Symbol.for("ICreateDoctorUseCase"),
@@ -134,6 +146,11 @@ export const DI_SYMBOLS = {
   IUpdateLocationUseCase: Symbol.for("IUpdateLocationUseCase"),
   IDeleteLocationUseCase: Symbol.for("IDeleteLocationUseCase"),
   IGetLocationUseCase: Symbol.for("IGetLocationUseCase"),
+  IGetAnalyticsOverviewUseCase: Symbol.for("IGetAnalyticsOverviewUseCase"),
+  IGetDailyRevenueUseCase: Symbol.for("IGetDailyRevenueUseCase"),
+  IGetMonthlyVisitsUseCase: Symbol.for("IGetMonthlyVisitsUseCase"),
+  IGetTopServicesUseCase: Symbol.for("IGetTopServicesUseCase"),
+  IGetRecentPaymentsUseCase: Symbol.for("IGetRecentPaymentsUseCase"),
 
   // Controllers
   ICreateDoctorController: Symbol.for("ICreateDoctorController"),
@@ -179,6 +196,13 @@ export const DI_SYMBOLS = {
   IUpdateLocationController: Symbol.for("IUpdateLocationController"),
   IDeleteLocationController: Symbol.for("IDeleteLocationController"),
   IGetLocationController: Symbol.for("IGetLocationController"),
+  IGetAnalyticsOverviewController: Symbol.for(
+    "IGetAnalyticsOverviewController"
+  ),
+  IGetDailyRevenueController: Symbol.for("IGetDailyRevenueController"),
+  IGetMonthlyVisitsController: Symbol.for("IGetMonthlyVisitsController"),
+  IGetTopServicesController: Symbol.for("IGetTopServicesController"),
+  IGetRecentPaymentsController: Symbol.for("IGetRecentPaymentsController"),
 }
 
 export interface DI_RETURN_TYPES {
@@ -193,6 +217,7 @@ export interface DI_RETURN_TYPES {
   ITrackedChargesRepository: ITrackedChargesRepository
   IVisitRepository: IVisitRepository
   ILocationRepository: ILocationRepository
+  IAnalyticsRepository: IAnalyticsRepository
 
   // Use Cases
   ICreateDoctorUseCase: ICreateDoctorUseCase
@@ -232,6 +257,11 @@ export interface DI_RETURN_TYPES {
   IUpdateLocationUseCase: IUpdateLocationUseCase
   IDeleteLocationUseCase: IDeleteLocationUseCase
   IGetLocationUseCase: IGetLocationUseCase
+  IGetAnalyticsOverviewUseCase: IGetAnalyticsOverviewUseCase
+  IGetDailyRevenueUseCase: IGetDailyRevenueUseCase
+  IGetMonthlyVisitsUseCase: IGetMonthlyVisitsUseCase
+  IGetTopServicesUseCase: IGetTopServicesUseCase
+  IGetRecentPaymentsUseCase: IGetRecentPaymentsUseCase
 
   // Controllers
   ICreateDoctorController: ICreateDoctorController
@@ -271,4 +301,9 @@ export interface DI_RETURN_TYPES {
   IUpdateLocationController: IUpdateLocationController
   IDeleteLocationController: IDeleteLocationController
   IGetLocationController: IGetLocationController
+  IGetAnalyticsOverviewController: IGetAnalyticsOverviewController
+  IGetDailyRevenueController: IGetDailyRevenueController
+  IGetMonthlyVisitsController: IGetMonthlyVisitsController
+  IGetTopServicesController: IGetTopServicesController
+  IGetRecentPaymentsController: IGetRecentPaymentsController
 }

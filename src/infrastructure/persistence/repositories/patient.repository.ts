@@ -132,23 +132,17 @@ export class PatientRepository
     return mapPatientDocumentToEntity(patient)
   }
 
-  // async update(patient: Patient): Promise<Patient | null> {
-  //   const patientData = {
-  //     ...patient,
-  //     updatedBy: patient.updatedBy,
-  //     updatedAt: new Date(),
-  //   }
-
-  //   const updatedPatient = await PatientModel.findByIdAndUpdate(
-  //     patient.id,
-  //     patientData
-  //   )
-
-  //   if (!updatedPatient) {
-  //     return null
-  //   }
-  //   return mapPatientDocumentToEntity(updatedPatient)
-  // }
+  async create(patient: PatientInsert, createdBy: string): Promise<Patient> {
+    const newPatient = await PatientModel.create({ ...patient, createdBy })
+    if (!newPatient) {
+      throw new DatabaseOperationError("No se pudo crear el paciente.")
+    }
+    const newPatientEntity = mapPatientDocumentToEntity(newPatient)
+    if (!newPatientEntity) {
+      throw new DatabaseOperationError("No se pudo mapear el paciente.")
+    }
+    return newPatientEntity
+  }
 
   async delete(id: Patient["id"]): Promise<void> {
     await PatientModel.findByIdAndDelete(id)

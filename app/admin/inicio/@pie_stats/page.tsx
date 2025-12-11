@@ -1,5 +1,5 @@
-import { PieGraph } from "~/app/_components/overview/components/pie-graph"
+import { TopServicesGraph } from "~/app/admin/inicio/_components/top-services-graph/pie-graph"
 
-export default async function Stats() {
-  return <PieGraph />
+export default function Stats() {
+  return <TopServicesGraph />
 }

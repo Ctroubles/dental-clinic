@@ -75,27 +75,27 @@ export class DoctorRepository
     }
   }
 
-  // async update(doctor: Doctor): Promise<Doctor | null> {
-  //   try {
-  //     const doctorData = {
-  //       ...doctor,
-  //       updatedBy: doctor.updatedBy?.toString(),
-  //       updatedAt: new Date(),
-  //     }
-  //     const updatedDoctor = await DoctorModel.findByIdAndUpdate(
-  //       doctor.id,
-  //       doctorData
-  //     )
+  async create(doctor: DoctorInsert, createdBy: string): Promise<Doctor> {
+    try {
+      const doctorData = {
+        ...doctor,
+        createdBy,
+      }
+      const newDoctor = await DoctorModel.create(doctorData)
+      if (!newDoctor) {
+        throw new DatabaseOperationError("No se pudo crear el doctor.")
+      }
+      const newDoctorEntity = mapDoctorDocumentToEntity(newDoctor)
+      if (!newDoctorEntity) {
+        throw new DatabaseOperationError("No se pudo mapear el doctor.")
+      }
 
-  //     if (!updatedDoctor) {
-  //       return null
-  //     }
-  //     return mapDoctorDocumentToEntity(updatedDoctor)
-  //   } catch (error) {
-  //     logger.error("[DoctorRepository] Error updating doctor", error)
-  //     throw new DatabaseOperationError(error)
-  //   }
-  // }
+      return newDoctorEntity
+    } catch (error) {
+      logger.error("[DoctorRepository] Error creating doctor", error)
+      throw new DatabaseOperationError(error)
+    }
+  }
 
   async delete(id: Doctor["id"]): Promise<void> {
     try {

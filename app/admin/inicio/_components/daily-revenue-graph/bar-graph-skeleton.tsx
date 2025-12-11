@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader } from "~/app/_components/ui/card"
 import { Skeleton } from "~/app/_components/ui/skeleton"
 
+const BAR_HEIGHTS = [20, 55, 35, 70, 45, 60, 30, 80, 50, 65, 40, 75] as const
+
 export function BarGraphSkeleton() {
   return (
     <Card>
@@ -29,7 +31,8 @@ export function BarGraphSkeleton() {
               key={i}
               className="w-full"
               style={{
-                height: `${Math.max(20, Math.random() * 100)}%`,
+                // height: `${Math.max(20, Math.random() * 100)}%`,
+                height: `${BAR_HEIGHTS[i]}%`,
               }}
             />
           ))}

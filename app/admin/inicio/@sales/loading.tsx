@@ -1,5 +1,5 @@
 import React from "react"
-import { RecentSalesSkeleton } from "~/app/_components/overview/components/recent-sales-skeleton"
+import { RecentSalesSkeleton } from "~/app/admin/inicio/_components/recent-payments/recent-sales-skeleton"
 
 export default function Loading() {
   return <RecentSalesSkeleton />

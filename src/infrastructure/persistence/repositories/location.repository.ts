@@ -67,28 +67,17 @@ export class LocationRepository
     return mapLocationDocumentToEntity(location)
   }
 
-  // async update(location: Location): Promise<Location | null> {
-  //   try {
-  //     const locationData = {
-  //       ...location,
-  //       updatedBy: location.updatedBy,
-  //       updatedAt: new Date(),
-  //     }
-
-  //     const updatedLocation = await LocationModel.findByIdAndUpdate(
-  //       location.id,
-  //       locationData
-  //     )
-
-  //     return mapLocationDocumentToEntity(updatedLocation)
-  //   } catch (error) {
-  //     const errorMessage =
-  //       error instanceof Error ? error.message : "Unknown error"
-  //     throw new DatabaseOperationError(
-  //       `Error updating Location: ${errorMessage}`
-  //     )
-  //   }
-  // }
+  async create(location: LocationInsert, createdBy: string): Promise<Location> {
+    const locationData = {
+      ...location,
+      createdBy,
+    }
+    const newLocation = await LocationModel.create(locationData)
+    if (!newLocation) {
+      throw new DatabaseOperationError("Error creating location")
+    }
+    return mapLocationDocumentToEntity(newLocation)!
+  }
 
   async delete(id: Location["id"]): Promise<Location | null> {
     const deletedLocation = await LocationModel.findByIdAndDelete(id)

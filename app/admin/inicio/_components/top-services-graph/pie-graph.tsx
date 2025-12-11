@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useMemo } from "react"
 import { IconTrendingUp } from "@tabler/icons-react"
 import { Label, Pie, PieChart } from "recharts"
 import {
@@ -16,67 +17,70 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "~/app/_components/ui/chart"
+import {
+  useRecentPayments,
+  useTopServices,
+} from "@/features/analytics/hooks/api/queries"
+import { PieGraphSkeleton } from "./pie-graph-skeleton"
 
 // Distribución de servicios odontológicos
-const chartData = [
-  {
-    service: "cleaning",
-    label: "Limpieza dental",
-    count: 54,
-    fill: "var(--primary)",
-  },
-  {
-    service: "filling",
-    label: "Empastes",
-    count: 34,
-    fill: "var(--primary)",
-  },
-  {
-    service: "extraction",
-    label: "Extracciones",
-    count: 18,
-    fill: "var(--primary)",
-  },
-  {
-    service: "orthodontics",
-    label: "Ortodoncia",
-    count: 14,
-    fill: "var(--primary)",
-  },
-]
+// const chartDataOriginal = [
+//   {
+//     service: "cleaning",
+//     label: "Limpieza dental",
+//     count: 54,
+//     fill: "var(--primary)",
+//   },
+//   {
+//     service: "filling",
+//     label: "Empastes",
+//     count: 34,
+//     fill: "var(--primary)",
+//   },
+//   {
+//     service: "extraction",
+//     label: "Extracciones",
+//     count: 18,
+//     fill: "var(--primary)",
+//   },
+//   {
+//     service: "orthodontics",
+//     label: "Ortodoncia",
+//     count: 14,
+//     fill: "var(--primary)",
+//   },
+// ]
 
 const chartConfig = {
   count: {
     label: "Servicios",
   },
-  cleaning: {
-    label: "Limpieza dental",
-    color: "var(--primary)",
-  },
-  filling: {
-    label: "Empastes",
-    color: "hsl(var(--chart-2))",
-  },
-  extraction: {
-    label: "Extracciones",
-    color: "hsl(var(--chart-3))",
-  },
-  orthodontics: {
-    label: "Ortodoncia",
-    color: "hsl(var(--chart-4))",
-  },
 } satisfies ChartConfig
 
-export function PieGraph() {
-  const totalServices = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.count, 0)
-  }, [])
+export function TopServicesGraph() {
+  const { data, isLoading, error } = useTopServices()
 
-  // Encontrar el servicio más solicitado
-  const leadingService = chartData.reduce((a, b) => (a.count > b.count ? a : b))
-  const leadingPercentage = Math.round(
-    (leadingService.count / totalServices) * 100
-  )
+  const chartData = useMemo(() => {
+    if (!data) return []
+    return data
+  }, [data])
+
+  const totalServices = useMemo(() => {
+    return chartData?.reduce((acc, curr) => acc + curr.count, 0) || 0
+  }, [chartData])
+
+  const leadingService = useMemo(() => {
+    if (!chartData || chartData.length === 0) return null
+    return chartData.reduce((a, b) => (a.count > b.count ? a : b))
+  }, [chartData])
+
+  const leadingPercentage = useMemo(() => {
+    return leadingService && totalServices
+      ? Math.round((leadingService.count / totalServices) * 100)
+      : 0
+  }, [leadingService, totalServices])
+
+  if (isLoading) return <PieGraphSkeleton />
 
   return (
     <Card className="@container/card">
@@ -84,7 +88,7 @@ export function PieGraph() {
         <CardTitle>Servicios Más Solicitados</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Distribución de servicios odontológicos este mes
+            Distribución de servicios este mes
           </span>
           <span className="@[540px]/card:hidden">Servicios del mes</span>
         </CardDescription>
@@ -96,10 +100,10 @@ export function PieGraph() {
         >
           <PieChart>
             <defs>
-              {chartData.map((item, index) => (
+              {chartData?.map((item, index) => (
                 <linearGradient
-                  key={item.service}
-                  id={`fill${item.service}`}
+                  key={item.itemId}
+                  id={`fill${item.itemId}`}
                   x1="0"
                   y1="0"
                   x2="0"
@@ -120,18 +124,19 @@ export function PieGraph() {
             </defs>
             <ChartTooltip
               cursor={false}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              content={({ active, payload }: any) => {
+              content={({ active, payload }) => {
                 if (active && payload && payload.length) {
-                  const entry = payload[0].payload
+                  const { payload: entry } = payload[0].payload
                   const percent = Math.round(
                     (entry.count / totalServices) * 100
                   )
                   return (
                     <div className="rounded-md bg-background p-3 shadow-md border text-xs">
-                      <div className="font-medium mb-1">{entry.label}</div>
+                      <div className="font-medium mb-2">
+                        {entry.serviceName}
+                      </div>
                       <div className="flex justify-between">
-                        <span>Servicios</span>
+                        <span>Cantidad</span>
                         <span className="font-bold">{entry.count}</span>
                       </div>
                       <div className="flex justify-between text-muted-foreground">
@@ -145,9 +150,9 @@ export function PieGraph() {
               }}
             />
             <Pie
-              data={chartData.map(item => ({
+              data={chartData?.map(item => ({
                 ...item,
-                fill: `url(#fill${item.service})`,
+                fill: `url(#fill${item.itemId})`,
               }))}
               dataKey="count"
               nameKey="label"
@@ -221,7 +226,7 @@ export function PieGraph() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
-          {leadingService.label} es el servicio más solicitado con{" "}
+          {leadingService?.serviceName} es el servicio más solicitado con{" "}
           {leadingPercentage}%
           <IconTrendingUp className="h-4 w-4" />
         </div>

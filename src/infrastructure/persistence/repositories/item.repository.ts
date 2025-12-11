@@ -86,25 +86,17 @@ export class ItemRepository
     return this.mapDocumentsToEntities(items)
   }
 
-  // async update(item: Item): Promise<Item | null> {
-  //   try {
-  //     const itemData = {
-  //       ...item,
-  //       updatedBy: item.updatedBy,
-  //     }
-  //     const updatedItem = await ItemModel.findByIdAndUpdate(item.id, itemData)
-
-  //     if (!updatedItem) {
-  //       throw new DatabaseOperationError("Error updating item. Item not found")
-  //     }
-
-  //     return mapItemDocumentToEntity(updatedItem)
-  //   } catch (error) {
-  //     const errorMessage =
-  //       error instanceof Error ? error.message : "Unknown error"
-  //     throw new DatabaseOperationError(`Error updating Item: ${errorMessage}`)
-  //   }
-  // }
+  async create(item: ItemInsert, createdBy: string): Promise<Item> {
+    const itemData = {
+      ...item,
+      createdBy,
+    }
+    const newItem = await ItemModel.create(itemData)
+    if (!newItem) {
+      throw new DatabaseOperationError("Error creating item")
+    }
+    return this.mapDocumentToEntity(newItem)!
+  }
 
   async delete(id: Item["id"]): Promise<Item | null> {
     const deletedItem = await ItemModel.findByIdAndDelete(id)
