@@ -15,42 +15,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "~/app/_components/ui/chart"
+import { useDailyRevenue } from "@/features/analytics/hooks/api/queries"
+import { BarGraphSkeleton } from "./bar-graph-skeleton"
 
 export const description = "Gráfico de ingresos diarios"
-
-// Datos de ejemplo: ingresos diarios de los últimos 30 días
-const chartData = [
-  { date: "2025-11-01", revenue: 580 },
-  { date: "2025-11-02", revenue: 420 },
-  { date: "2025-11-03", revenue: 650 },
-  { date: "2025-11-04", revenue: 720 },
-  { date: "2025-11-05", revenue: 490 },
-  { date: "2025-11-06", revenue: 550 },
-  { date: "2025-11-07", revenue: 680 },
-  { date: "2025-11-08", revenue: 730 },
-  { date: "2025-11-09", revenue: 410 },
-  { date: "2025-11-10", revenue: 590 },
-  { date: "2025-11-11", revenue: 820 },
-  { date: "2025-11-12", revenue: 670 },
-  { date: "2025-11-13", revenue: 540 },
-  { date: "2025-11-14", revenue: 710 },
-  { date: "2025-11-15", revenue: 780 },
-  { date: "2025-11-16", revenue: 450 },
-  { date: "2025-11-17", revenue: 620 },
-  { date: "2025-11-18", revenue: 850 },
-  { date: "2025-11-19", revenue: 690 },
-  { date: "2025-11-20", revenue: 570 },
-  { date: "2025-11-21", revenue: 640 },
-  { date: "2025-11-22", revenue: 750 },
-  { date: "2025-11-23", revenue: 480 },
-  { date: "2025-11-24", revenue: 610 },
-  { date: "2025-11-25", revenue: 720 },
-  { date: "2025-11-26", revenue: 680 },
-  { date: "2025-11-27", revenue: 590 },
-  { date: "2025-11-28", revenue: 740 },
-  { date: "2025-11-29", revenue: 820 },
-  { date: "2025-11-30", revenue: 650 },
-]
 
 const chartConfig = {
   revenue: {
@@ -59,34 +27,30 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function BarGraph() {
+export function DailyRevenueGraph() {
+  const { data: dailyRevenue, isLoading } = useDailyRevenue()
+
   const total = React.useMemo(
     () => ({
-      revenue: chartData.reduce((acc, curr) => acc + curr.revenue, 0),
+      revenue: dailyRevenue?.reduce((acc, curr) => acc + curr.revenue, 0) || 0,
     }),
-    []
+    [dailyRevenue]
   )
 
-  const [isClient, setIsClient] = React.useState(false)
-
-  React.useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  if (!isClient) {
-    return null
+  if (isLoading) {
+    return <BarGraphSkeleton />
   }
 
   return (
-    <Card className="@container/card !pt-3">
-      <CardHeader className="flex flex-col items-stretch space-y-0 border-b !p-0 sm:flex-row">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 !py-0">
+    <Card className="@container/card pt-3!">
+      <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0! sm:flex-row">
+        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-0!">
           <CardTitle>Ingresos Diarios</CardTitle>
           <CardDescription>
             <span className="hidden @[540px]/card:block">
-              Evolución de ingresos diarios en noviembre 2025
+              Evolución de ingresos diarios en el último mes
             </span>
-            <span className="@[540px]/card:hidden">Noviembre 2025</span>
+            <span className="@[540px]/card:hidden">Último mes</span>
           </CardDescription>
         </div>
         <div className="flex">
@@ -104,7 +68,7 @@ export function BarGraph() {
           className="aspect-auto h-[250px] w-full"
         >
           <BarChart
-            data={chartData}
+            data={dailyRevenue}
             margin={{
               left: 12,
               right: 12,
@@ -130,13 +94,13 @@ export function BarGraph() {
               axisLine={false}
               tickMargin={8}
               tickFormatter={value => `S/ ${value}`}
-              label={{
-                value: "Ingresos (S/)",
-                angle: -90,
-                position: "insideLeft",
-                offset: 10,
-                style: { fill: "#888", fontSize: 13 },
-              }}
+              // label={{
+              //   value: "Ingresos en soles.",
+              //   angle: -90,
+              //   position: "insideLeft",
+              //   offset: -10,
+              //   style: { fill: "#888", fontSize: 13 },
+              // }}
             />
             <ChartTooltip
               cursor={{ fill: "var(--primary)", opacity: 0.1 }}
@@ -151,7 +115,7 @@ export function BarGraph() {
                       year: "numeric",
                     })
                   }}
-                  formatter={value => [`S/ ${value}`, "Ingresos"]}
+                  formatter={value => [`S/ ${value}`]}
                 />
               }
             />

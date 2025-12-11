@@ -2,24 +2,7 @@ import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export * from "./date"
-
-export const getEntityFullname = (
-  entity:
-    | {
-        firstName?: string
-        lastName?: string
-      }
-    | undefined
-    | null
-): string => {
-  const firstName = entity?.firstName?.trim() || ""
-  const lastName = entity?.lastName?.trim() || ""
-
-  if (!firstName && !lastName) return "--"
-  if (!firstName) return lastName
-  if (!lastName) return firstName
-  return `${firstName} ${lastName}`
-}
+export * from "./string"
 
 export const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("es-PE", {

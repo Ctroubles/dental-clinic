@@ -74,7 +74,7 @@ export function createSecureContext<R, T extends any[] = []>(
 
         if (error instanceof BaseError) {
           logger.error(
-            "[createSecureContext] Unexpected BaseError (non-ApplicationError) reached secure context. Should have been handled earlier. Investigation required.",
+            "[createSecureContext] Unexpected BaseError (non-ApplicationError) reached secure context. Immediate investigation required.",
             {
               requestId,
               errorType: error.constructor.name,

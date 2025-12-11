@@ -17,7 +17,10 @@ export const { useMut: useCreateVisit } = makeMutation(() => {
     mutationKey: visitsQueryKeys.create(),
     onSuccess: () => {
       toast.success("Visita creada correctamente")
-      queryClient.invalidateQueries({ queryKey: visitsQueryKeys.list() })
+      queryClient.invalidateQueries({
+        queryKey: visitsQueryKeys.baseList(),
+        exact: false,
+      })
     },
   }
 })
@@ -30,7 +33,11 @@ export const { useMut: useUpdateVisit } = makeMutation(() => {
       updateVisit(visitId, visit),
     onSuccess: (_, { visitId }) => {
       toast.success("Visita actualizada correctamente")
-      queryClient.invalidateQueries({ queryKey: visitsQueryKeys.list() })
+      queryClient.invalidateQueries({
+        queryKey: visitsQueryKeys.baseList(),
+        exact: false,
+      })
+
       queryClient.invalidateQueries({
         queryKey: visitsQueryKeys.getById(visitId),
       })

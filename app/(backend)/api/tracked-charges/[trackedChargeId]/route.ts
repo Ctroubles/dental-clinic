@@ -30,7 +30,7 @@ export const PUT = createSecureContext(
       "IUpdateTrackedChargeController"
     )
     return await updateTrackedChargeController(
-      { trackedChargeId, updatedTrackedCharge: data },
+      { id: trackedChargeId, data },
       user.dbUserId
     )
   }

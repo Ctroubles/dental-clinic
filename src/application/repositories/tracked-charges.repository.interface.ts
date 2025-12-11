@@ -21,7 +21,11 @@ export type TrackedChargesFilters = {
 }
 
 export interface ITrackedChargesRepository
-  extends IBaseRepository<TrackedCharge, TrackedChargesFilters> {
+  extends IBaseRepository<
+    TrackedCharge,
+    TrackedChargeInsert,
+    TrackedChargesFilters
+  > {
   findById(
     id: TrackedCharge["id"],
     session?: PersistenceSession
@@ -35,10 +39,6 @@ export interface ITrackedChargesRepository
   create(
     trackedCharge: TrackedChargeInsert,
     createdBy: string,
-    session?: PersistenceSession
-  ): Promise<TrackedCharge>
-  update(
-    trackedCharge: TrackedCharge,
     session?: PersistenceSession
   ): Promise<TrackedCharge>
   delete(id: TrackedCharge["id"]): Promise<void>

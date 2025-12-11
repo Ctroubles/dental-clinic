@@ -2,8 +2,9 @@ import { IGetVisitsUseCaseInput } from "@/application/use-cases/visits/get-visit
 
 export const visitsQueryKeys = {
   base: ["visits"] as const,
+  baseList: () => [...visitsQueryKeys.base, "list"] as const,
   list: (request?: IGetVisitsUseCaseInput) =>
-    [...visitsQueryKeys.base, "list", request] as const,
+    [...visitsQueryKeys.baseList(), request] as const,
   getById: (id: string) => [...visitsQueryKeys.base, "detail", id] as const,
   create: () => [...visitsQueryKeys.base, "create"] as const,
   update: (id: string) => [...visitsQueryKeys.base, "update", id] as const,

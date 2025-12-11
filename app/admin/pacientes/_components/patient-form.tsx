@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -85,15 +85,20 @@ export default function PatientForm({
   const { mutateAsync: lookUpPatient, isPending: isLookingUp } =
     useLookUpPatientInfoByDni({ dni: "" })
 
-  const defaultValues: PatientInsert = {
-    dni: initialData?.dni || "",
-    firstName: initialData?.firstName || "",
-    lastName: initialData?.lastName || "",
-    phone: initialData?.phone || null,
-    origin: initialData?.origin || null,
-    dateOfBirth: initialData?.dateOfBirth || defaultDate,
-    gender: initialData?.gender || "M",
-  }
+  const defaultValues: PatientInsert = useMemo(
+    () => ({
+      dni: initialData?.dni || "",
+      firstName: initialData?.firstName || "",
+      lastName: initialData?.lastName || "",
+      phone: initialData?.phone || null,
+      origin: initialData?.origin || null,
+      dateOfBirth: initialData?.dateOfBirth
+        ? new Date(initialData.dateOfBirth)
+        : defaultDate,
+      gender: initialData?.gender || "M",
+    }),
+    [initialData]
+  )
 
   const form = useForm<PatientInsert>({
     resolver: zodResolver(patientInsertSchema),
@@ -106,9 +111,10 @@ export default function PatientForm({
     if (isPatient(initialData)) {
       await updatePatient({ patientId: initialData.id, patient: values })
     } else {
-      const response = await createPatient(values)
-      router.push(`/admin/pacientes/${response.id}`)
+      await createPatient(values)
     }
+
+    router.push(`/admin/pacientes`)
   }
 
   const calculateAge = (dateOfBirth: Date | null): number | null => {

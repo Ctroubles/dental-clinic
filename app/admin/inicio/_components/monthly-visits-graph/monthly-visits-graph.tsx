@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { IconTrendingUp } from "@tabler/icons-react"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import {
@@ -16,16 +17,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "~/app/_components/ui/chart"
-
-// Datos de visitas mensuales de los últimos 6 meses
-const chartData = [
-  { month: "Jun", visits: 95 },
-  { month: "Jul", visits: 108 },
-  { month: "Ago", visits: 118 },
-  { month: "Sep", visits: 125 },
-  { month: "Oct", visits: 132 },
-  { month: "Nov", visits: 145 },
-]
+import { useMonthlyVisits } from "@/features/analytics/hooks/api/queries"
+import { AreaGraphSkeleton } from "./area-graph-skeleton"
 
 const chartConfig = {
   visits: {
@@ -35,13 +28,33 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function AreaGraph() {
-  const totalVisits = chartData.reduce((acc, curr) => acc + curr.visits, 0)
-  const avgVisits = Math.round(totalVisits / chartData.length)
-  const lastMonth = chartData[chartData.length - 1]
-  const previousMonth = chartData[chartData.length - 2]
-  const growthPercentage = Math.round(
-    ((lastMonth.visits - previousMonth.visits) / previousMonth.visits) * 100
-  )
+  const { data, isLoading } = useMonthlyVisits()
+
+  const { visitsData, totalVisits, avgVisits, growthPercentage } =
+    useMemo(() => {
+      const visitsData = data || []
+      const totalVisits = visitsData.reduce((acc, curr) => acc + curr.visits, 0)
+      const avgVisits =
+        visitsData.length > 0 ? Math.round(totalVisits / visitsData.length) : 0
+
+      const lastMonth = visitsData[visitsData.length - 1]
+      const previousMonth = visitsData[visitsData.length - 2]
+
+      const growthPercentage =
+        lastMonth && previousMonth
+          ? Math.round(
+              ((lastMonth.visits - previousMonth.visits) /
+                previousMonth.visits) *
+                100
+            )
+          : 0
+
+      return { visitsData, totalVisits, avgVisits, growthPercentage }
+    }, [data])
+
+  if (isLoading) {
+    return <AreaGraphSkeleton />
+  }
 
   return (
     <Card className="@container/card">
@@ -57,7 +70,7 @@ export function AreaGraph() {
           className="aspect-auto h-[250px] w-full"
         >
           <AreaChart
-            data={chartData}
+            data={visitsData}
             margin={{
               left: 12,
               right: 12,

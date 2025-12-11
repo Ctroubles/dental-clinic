@@ -16,10 +16,10 @@ import {
   TabsList,
   TabsTrigger,
 } from "~/app/_components/ui/tabs"
-import { AreaGraph } from "./area-graph"
-import { BarGraph } from "./bar-graph"
+import { DailyRevenueGraph } from "./daily-revenue-graph/daily-revenue-graph"
+import { AreaGraph } from "./monthly-visits-graph/monthly-visits-graph"
 import { NewPatients } from "./new-patient"
-import { PieGraph } from "./pie-graph"
+import { TopServicesGraph } from "./top-services-graph/pie-graph"
 
 export default function OverViewPage() {
   return (
@@ -134,7 +134,7 @@ export default function OverViewPage() {
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
               <div className="col-span-4">
-                <BarGraph />
+                <DailyRevenueGraph />
               </div>
               <Card className="col-span-4 md:col-span-3">
                 <NewPatients />
@@ -143,7 +143,7 @@ export default function OverViewPage() {
                 <AreaGraph />
               </div>
               <div className="col-span-4 md:col-span-3">
-                <PieGraph />
+                <TopServicesGraph />
               </div>
             </div>
           </TabsContent>

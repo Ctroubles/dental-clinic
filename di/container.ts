@@ -1,5 +1,6 @@
 import { createContainer } from "@evyweb/ioctopus"
 import { AsyncLocalStorage } from "async_hooks"
+import { createAnalyticsModule } from "./modules/analytics.module"
 import { createDoctorsModule } from "./modules/doctors.module"
 import { createItemsModule } from "./modules/items.module"
 import { createLocationsModule } from "./modules/locations.module"
@@ -24,6 +25,7 @@ ApplicationContainer.load(
   createTrackedChargesModule()
 )
 ApplicationContainer.load(Symbol("LocationsModule"), createLocationsModule())
+ApplicationContainer.load(Symbol("AnalyticsModule"), createAnalyticsModule())
 
 export function getInjection<K extends keyof typeof DI_SYMBOLS>(
   symbol: K

@@ -1,8 +1,5 @@
-import { BarGraph } from "~/app/_components/overview/components/bar-graph"
-import { delay } from "~/lib/utils"
+import { DailyRevenueGraph } from "~/app/admin/inicio/_components/daily-revenue-graph/daily-revenue-graph"
 
-export default async function BarStats() {
-  await await delay(1000)
-
-  return <BarGraph />
+export default function BarStats() {
+  return <DailyRevenueGraph />
 }

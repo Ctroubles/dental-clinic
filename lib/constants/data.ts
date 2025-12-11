@@ -13,6 +13,14 @@ export type Product = {
 
 export const navItems: NavItem[] = [
   {
+    title: "Inicio",
+    url: "/admin/inicio",
+    icon: "dashboard",
+    shortcut: ["i", "i"],
+    isActive: false,
+    items: [],
+  },
+  {
     title: "Visitas",
     url: "/admin/visitas",
     icon: "calendar",

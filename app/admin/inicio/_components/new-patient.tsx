@@ -15,49 +15,6 @@ import {
 import { dateToHumanReadable } from "~/lib/utils"
 import { useGetPatients } from "@/features/patients/hooks"
 
-// const newMembersData = [
-//   {
-//     name: 'Carlos Mendoza',
-//     whatsapp: '+51 987 654 321',
-//     avatar: 'https://api.slingacademy.com/public/sample-users/1.png',
-//     fallback: 'CM',
-//     subscriptionDuration: '3 meses',
-//     joinDate: 'Hace 2 días'
-//   },
-//   {
-//     name: 'Lucía Estefanía Torres',
-//     whatsapp: '+51 912 345 678',
-//     avatar: 'https://api.slingacademy.com/public/sample-users/2.png',
-//     fallback: 'MT',
-//     subscriptionDuration: '1 mes',
-//     joinDate: 'Hace 3 días'
-//   },
-//   {
-//     name: 'Juan Pablo Ríos',
-//     whatsapp: '+51 998 765 432',
-//     avatar: 'https://api.slingacademy.com/public/sample-users/3.png',
-//     fallback: 'JR',
-//     subscriptionDuration: '6 meses',
-//     joinDate: 'Hace 4 días'
-//   },
-//   {
-//     name: 'Ana Lucía Vargas',
-//     whatsapp: '+51 977 123 456',
-//     avatar: 'https://api.slingacademy.com/public/sample-users/5.png',
-//     fallback: 'AV',
-//     subscriptionDuration: '2 meses',
-//     joinDate: 'Hace 5 días'
-//   },
-//   {
-//     name: 'Diego Alejandro Soto',
-//     whatsapp: '+51 966 789 012',
-//     avatar: 'https://api.slingacademy.com/public/sample-users/5.png',
-//     fallback: 'DS',
-//     subscriptionDuration: '1 mes',
-//     joinDate: 'Hace 6 días'
-//   }
-// ];
-
 export function NewPatients() {
   const { data: patientsData } = useGetPatients()
   const patients = patientsData?.records || []

@@ -86,61 +86,23 @@ export default function VisitSimpleForm({
   const { mutateAsync: createVisit, isPending: isCreating } = useCreateVisit()
   const { mutateAsync: updateVisit, isPending: isUpdating } = useUpdateVisit()
 
-  // Get patients, doctors, and locations data
-  const { data: patientsData, isLoading: isLoadingPatients } =
-    useGetPatients(undefined)
-  const { data: doctorsData, isLoading: isLoadingDoctors } =
-    useGetDoctors(undefined)
-  const { data: locationsData, isLoading: isLoadingLocations } =
-    useGetLocations(undefined)
-
-  // Search states
   const [patientSearch, setPatientSearch] = useState("")
   const [doctorSearch, setDoctorSearch] = useState("")
   const [locationSearch, setLocationSearch] = useState("")
 
-  // Filtered patients using useMemo
-  const filteredPatients = useMemo(() => {
-    const patients = patientsData?.records || []
-    if (!patients.length) return []
-    if (!patientSearch.trim()) return patients
-
-    const searchLower = patientSearch.toLowerCase().trim()
-    return patients.filter(
-      patient =>
-        patient.firstName?.toLowerCase().includes(searchLower) ||
-        patient.lastName?.toLowerCase().includes(searchLower) ||
-        patient.dni?.toLowerCase().includes(searchLower)
-    )
-  }, [patientsData, patientSearch])
-
-  // Filtered doctors using useMemo
-  const filteredDoctors = useMemo(() => {
-    const doctors = doctorsData?.records || []
-    if (!doctors.length) return []
-    if (!doctorSearch.trim()) return doctors
-
-    const searchLower = doctorSearch.toLowerCase().trim()
-    return doctors.filter(
-      doctor =>
-        doctor.firstName?.toLowerCase().includes(searchLower) ||
-        doctor.lastName?.toLowerCase().includes(searchLower)
-    )
-  }, [doctorsData, doctorSearch])
-
-  // Filtered locations using useMemo
-  const filteredLocations = useMemo(() => {
-    const locations = locationsData?.records || []
-    if (!locations.length) return []
-    if (!locationSearch.trim()) return locations
-
-    const searchLower = locationSearch.toLowerCase().trim()
-    return locations.filter(
-      location =>
-        location.name?.toLowerCase().includes(searchLower) ||
-        location.description?.toLowerCase().includes(searchLower)
-    )
-  }, [locationsData, locationSearch])
+  const { data: patientsData, isLoading: isLoadingPatients } = useGetPatients({
+    page: 1,
+    pageSize: 1000,
+  })
+  const { data: doctorsData, isLoading: isLoadingDoctors } = useGetDoctors({
+    page: 1,
+    pageSize: 1000,
+  })
+  const { data: locationsData, isLoading: isLoadingLocations } =
+    useGetLocations({
+      page: 1,
+      pageSize: 1000,
+    })
 
   const defaultValues = useMemo<VisitInsert>(
     () => ({
@@ -157,6 +119,91 @@ export default function VisitSimpleForm({
     resolver: zodResolver(visitInsertSchema),
     values: defaultValues,
   })
+
+  const selectedPatientId = form.watch("patientId")
+  const filteredPatients = useMemo(() => {
+    const patients = patientsData?.records || []
+    if (!patients.length) return []
+    if (!patientSearch.trim()) return patients
+
+    const searchLower = patientSearch.toLowerCase().trim()
+    const filtered = patients.filter(
+      patient =>
+        patient.firstName?.toLowerCase().includes(searchLower) ||
+        patient.lastName?.toLowerCase().includes(searchLower) ||
+        patient.dni?.toLowerCase().includes(searchLower)
+    )
+
+    if (
+      selectedPatientId &&
+      !filtered.some(patient => patient.id === selectedPatientId)
+    ) {
+      const selectedPatient = patients.find(
+        patient => patient.id === selectedPatientId
+      )
+      if (selectedPatient) {
+        return [selectedPatient, ...filtered]
+      }
+    }
+
+    return filtered
+  }, [patientsData, patientSearch, selectedPatientId])
+
+  const selectedDoctorId = form.watch("doctorId")
+  const filteredDoctors = useMemo(() => {
+    const doctors = doctorsData?.records || []
+    if (!doctors.length) return []
+    if (!doctorSearch.trim()) return doctors
+
+    const searchLower = doctorSearch.toLowerCase().trim()
+    const filtered = doctors.filter(
+      doctor =>
+        doctor.firstName?.toLowerCase().includes(searchLower) ||
+        doctor.lastName?.toLowerCase().includes(searchLower)
+    )
+
+    if (
+      selectedDoctorId &&
+      !filtered.some(doctor => doctor.id === selectedDoctorId)
+    ) {
+      const selectedDoctor = doctors.find(
+        doctor => doctor.id === selectedDoctorId
+      )
+      if (selectedDoctor) {
+        return [selectedDoctor, ...filtered]
+      }
+    }
+
+    return filtered
+  }, [doctorsData, doctorSearch, selectedDoctorId])
+
+  const selectedLocationId = form.watch("locationId")
+  const filteredLocations = useMemo(() => {
+    const locations = locationsData?.records || []
+    if (!locations.length) return []
+    if (!locationSearch.trim()) return locations
+
+    const searchLower = locationSearch.toLowerCase().trim()
+    const filtered = locations.filter(
+      location =>
+        location.name?.toLowerCase().includes(searchLower) ||
+        location.description?.toLowerCase().includes(searchLower)
+    )
+
+    if (
+      selectedLocationId &&
+      !filtered.some(location => location.id === selectedLocationId)
+    ) {
+      const selectedLocation = locations.find(
+        location => location.id === selectedLocationId
+      )
+      if (selectedLocation) {
+        return [selectedLocation, ...filtered]
+      }
+    }
+
+    return filtered
+  }, [locationsData, locationSearch, selectedLocationId])
 
   const watchedValues = form.watch()
 
@@ -346,6 +393,7 @@ export default function VisitSimpleForm({
                               onChange={e => setPatientSearch(e.target.value)}
                               onClick={e => e.stopPropagation()}
                               onKeyDown={e => e.stopPropagation()}
+                              autoFocus
                               className="h-9 border-0 bg-transparent pl-8 pr-3 text-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
                             />
                           </div>
@@ -406,6 +454,7 @@ export default function VisitSimpleForm({
                               onChange={e => setDoctorSearch(e.target.value)}
                               onClick={e => e.stopPropagation()}
                               onKeyDown={e => e.stopPropagation()}
+                              autoFocus
                               className="h-9 border-0 bg-transparent pl-8 pr-3 text-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
                             />
                           </div>
@@ -468,6 +517,7 @@ export default function VisitSimpleForm({
                             onChange={e => setLocationSearch(e.target.value)}
                             onClick={e => e.stopPropagation()}
                             onKeyDown={e => e.stopPropagation()}
+                            autoFocus
                             className="h-9 border-0 bg-transparent pl-8 pr-3 text-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
                           />
                         </div>
@@ -561,7 +611,7 @@ export default function VisitSimpleForm({
               <Button
                 type="submit"
                 className="w-full h-11 text-base font-medium"
-                disabled={isLoading}
+                disabled={isLoading || !form.formState.isValid}
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -577,19 +627,23 @@ export default function VisitSimpleForm({
                 type="button"
                 variant="outline"
                 className="w-full h-10 text-sm"
-                disabled={isLoading}
+                disabled={isLoading || !form.formState.isValid}
                 onClick={async () => {
                   const values = form.getValues()
+                  const isValid = await form.trigger()
+                  if (!isValid) {
+                    return
+                  }
+
                   if (isVisit(initialData)) {
                     await updateVisit({
                       visitId: initialData.id,
                       visit: values,
                     })
-                    router.push(`/admin/visitas/${initialData.id}`)
                   } else {
-                    const response = await createVisit(values)
-                    router.push(`/admin/visitas/${response.id}`)
+                    await createVisit(values)
                   }
+                  router.push(`/admin/visitas`)
                 }}
               >
                 {isCreationMode ? "Crear Visita" : "Actualizar Visita"}

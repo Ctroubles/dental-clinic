@@ -16,7 +16,12 @@ import {
 import { BaseRepository } from "./base.repository"
 
 export class PatientRepository
-  extends BaseRepository<Patient, PatientDocument, PatientsFilters>
+  extends BaseRepository<
+    Patient,
+    PatientDocument,
+    PatientInsert,
+    PatientsFilters
+  >
   implements IPatientRepository
 {
   protected readonly model: Model<PatientDocument>
@@ -50,6 +55,10 @@ export class PatientRepository
         { firstName: searchRegex },
         { lastName: searchRegex },
       ]
+    }
+
+    if (filters?.dni) {
+      query.dni = filters.dni
     }
 
     return query
@@ -121,36 +130,6 @@ export class PatientRepository
       return null
     }
     return mapPatientDocumentToEntity(patient)
-  }
-
-  async create(patient: PatientInsert, createdBy: string): Promise<Patient> {
-    const newPatient = await PatientModel.create({ ...patient, createdBy })
-    if (!newPatient) {
-      throw new DatabaseOperationError("No se pudo crear el paciente.")
-    }
-    const newPatientEntity = mapPatientDocumentToEntity(newPatient)
-    if (!newPatientEntity) {
-      throw new DatabaseOperationError("No se pudo mapear el paciente.")
-    }
-    return newPatientEntity
-  }
-
-  async update(patient: Patient): Promise<Patient | null> {
-    const patientData = {
-      ...patient,
-      updatedBy: patient.updatedBy,
-      updatedAt: new Date(),
-    }
-
-    const updatedPatient = await PatientModel.findByIdAndUpdate(
-      patient.id,
-      patientData
-    )
-
-    if (!updatedPatient) {
-      return null
-    }
-    return mapPatientDocumentToEntity(updatedPatient)
   }
 
   async delete(id: Patient["id"]): Promise<void> {

@@ -1,6 +1,10 @@
 import { NotFoundError, ValidationError } from "@/application/errors"
 import { IUpdateLocationUseCase } from "@/application/use-cases/locations/update-location.use-case"
-import { Location, locationInsertSchema } from "@/domain/entities/location"
+import {
+  Location,
+  LocationInsert,
+  locationInsertSchema,
+} from "@/domain/entities/location"
 import { DataResult } from "@/shared/result-handling/data-result"
 
 function presenter(location: Location): Location {
@@ -19,18 +23,19 @@ export type IUpdateLocationController = ReturnType<
 export const updateLocationController =
   (updateLocationUseCase: IUpdateLocationUseCase) =>
   async (
-    input: { location: Location },
+    input: { id: string; data: LocationInsert },
     updatedBy: string
   ): Promise<DataResult<Location>> => {
     const { data, error: parseError } = locationInsertSchema.safeParse(
-      input.location
+      input.data
     )
     if (parseError) {
       return DataResult.failure(new ValidationError(parseError))
     }
 
     const response = await updateLocationUseCase({
-      location: { ...data, id: input.location.id },
+      id: input.id,
+      data,
       updatedBy,
     })
 

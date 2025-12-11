@@ -13,55 +13,9 @@ import {
   CardHeader,
   CardTitle,
 } from "~/app/_components/ui/card"
-
-// Mock data for recent payments
-const recentPaymentsData = [
-  {
-    id: 1,
-    patientName: "Juan Perez",
-    treatment: "Limpieza dental",
-    amount: 150,
-    method: "yape",
-    date: "Hace 2 horas",
-    initials: "MG",
-  },
-  {
-    id: 2,
-    patientName: "Carlos Mendoza",
-    treatment: "Extracción de muela",
-    amount: 280,
-    method: "cash",
-    date: "Hace 5 horas",
-    initials: "CM",
-  },
-  {
-    id: 3,
-    patientName: "Ana Torres",
-    treatment: "Ortodoncia - Cuota 1",
-    amount: 450,
-    method: "card",
-    date: "Ayer",
-    initials: "AT",
-  },
-  {
-    id: 4,
-    patientName: "Luis Ramírez",
-    treatment: "Blanqueamiento",
-    amount: 380,
-    method: "transfer",
-    date: "Hace 2 días",
-    initials: "LR",
-  },
-  {
-    id: 5,
-    patientName: "Patricia Vega",
-    treatment: "Endodoncia",
-    amount: 520,
-    method: "yape",
-    date: "Hace 3 días",
-    initials: "PV",
-  },
-]
+import { dateToHumanReadable, getEntityInitials } from "~/lib/utils"
+import { useRecentPayments } from "@/features/analytics/hooks/api/queries"
+import { RecentSalesSkeleton } from "./recent-sales-skeleton"
 
 const paymentMethodLabels: Record<string, string> = {
   yape: "Yape",
@@ -81,6 +35,12 @@ const paymentMethodColors: Record<string, string> = {
 }
 
 export function RecentPayments() {
+  const { data, isLoading, error } = useRecentPayments()
+
+  if (isLoading) {
+    return <RecentSalesSkeleton />
+  }
+
   return (
     <Card className="h-full">
       <CardHeader>
@@ -90,25 +50,27 @@ export function RecentPayments() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-8">
-          {recentPaymentsData.map(payment => (
+        <div className="space-y-6">
+          {data?.map(payment => (
             <div key={payment.id} className="flex items-center">
-              <Avatar className="h-9 w-9">
+              {/* <Avatar className="h-9 w-9">
                 <AvatarImage
-                  src={`https://api.slingacademy.com/public/sample-users/${payment.id}.png`}
+                  src={`https://api.slingacademy.com/public/sample-users/${index + 1}.png`}
                   alt={payment.patientName}
                 />
-                <AvatarFallback>{payment.initials}</AvatarFallback>
-              </Avatar>
+                <AvatarFallback>
+                  {getEntityInitials(payment.patientName)}
+                </AvatarFallback>
+              </Avatar> */}
               <div className="ml-4 space-y-1 flex-1">
                 <p className="text-sm leading-none font-medium">
                   {payment.patientName}
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  {payment.treatment}
+                  {payment.serviceName || "--"}
                 </p>
               </div>
-              <div className="ml-auto text-right space-y-1">
+              <div className="ml-auto text-right">
                 <p className="text-sm font-medium">S/ {payment.amount}</p>
                 <div className="flex items-center gap-2 justify-end">
                   <Badge
@@ -118,7 +80,7 @@ export function RecentPayments() {
                     {paymentMethodLabels[payment.method]}
                   </Badge>
                   <p className="text-xs text-muted-foreground">
-                    {payment.date}
+                    {dateToHumanReadable(payment.date)}
                   </p>
                 </div>
               </div>

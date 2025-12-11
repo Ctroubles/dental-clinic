@@ -43,7 +43,7 @@ export default function LocationForm({
   initialData,
   pageTitle,
 }: {
-  initialData: LocationInsert | Location | null
+  initialData: LocationInsert | null
   pageTitle: string
 }) {
   const router = useRouter()

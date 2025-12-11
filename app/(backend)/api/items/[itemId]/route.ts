@@ -25,10 +25,7 @@ export const PUT = createSecureContext(
     const data = await req.json()
 
     const updateItemController = getInjection("IUpdateItemController")
-    return await updateItemController(
-      { itemId, updatedItem: data },
-      user.dbUserId
-    )
+    return await updateItemController({ id: itemId, data }, user.dbUserId)
   }
 )
 

@@ -41,6 +41,8 @@
       }
     ]
   },
+  "strictFunctionTypes": true,
+  "noImplicitOverride": true,
   "include": [
     "next-env.d.ts",
     "**/*.ts",
