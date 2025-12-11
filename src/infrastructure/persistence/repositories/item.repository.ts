@@ -86,6 +86,18 @@ export class ItemRepository
     return this.mapDocumentsToEntities(items)
   }
 
+  async create(item: ItemInsert, createdBy: string): Promise<Item> {
+    const itemData = {
+      ...item,
+      createdBy,
+    }
+    const newItem = await ItemModel.create(itemData)
+    if (!newItem) {
+      throw new DatabaseOperationError("Error creating item")
+    }
+    return this.mapDocumentToEntity(newItem)!
+  }
+
   async delete(id: Item["id"]): Promise<Item | null> {
     const deletedItem = await ItemModel.findByIdAndDelete(id)
     return mapItemDocumentToEntity(deletedItem)

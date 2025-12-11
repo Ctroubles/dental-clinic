@@ -75,6 +75,28 @@ export class DoctorRepository
     }
   }
 
+  async create(doctor: DoctorInsert, createdBy: string): Promise<Doctor> {
+    try {
+      const doctorData = {
+        ...doctor,
+        createdBy,
+      }
+      const newDoctor = await DoctorModel.create(doctorData)
+      if (!newDoctor) {
+        throw new DatabaseOperationError("No se pudo crear el doctor.")
+      }
+      const newDoctorEntity = mapDoctorDocumentToEntity(newDoctor)
+      if (!newDoctorEntity) {
+        throw new DatabaseOperationError("No se pudo mapear el doctor.")
+      }
+
+      return newDoctorEntity
+    } catch (error) {
+      logger.error("[DoctorRepository] Error creating doctor", error)
+      throw new DatabaseOperationError(error)
+    }
+  }
+
   async delete(id: Doctor["id"]): Promise<void> {
     try {
       await DoctorModel.findByIdAndDelete(id)

@@ -161,6 +161,36 @@ export class VisitRepository
     }
   }
 
+  async create(visit: VisitInsert, createdBy: string): Promise<Visit> {
+    try {
+      const visitData = {
+        ...visit,
+        patientId: new Types.ObjectId(visit.patientId),
+        doctorId: new Types.ObjectId(visit.doctorId),
+        createdBy,
+      }
+      const newVisit = await VisitModel.create(visitData)
+      if (!newVisit) {
+        throw new DatabaseOperationError("Error creating visit")
+      }
+      // Fetch the created visit with populated fields
+      const populatedVisit = await VisitModel.findById(newVisit.id)
+        .populate("patient")
+        .populate("doctor")
+      if (!populatedVisit) {
+        throw new DatabaseOperationError("Error fetching created visit")
+      }
+      const mappedVisit = mapVisitDocumentToEntity(populatedVisit)
+      if (!mappedVisit) {
+        throw new DatabaseOperationError("Error mapping created visit")
+      }
+      return mappedVisit
+    } catch (error) {
+      logger.error("[VisitRepository] Error creating visit", error)
+      throw new DatabaseOperationError(error)
+    }
+  }
+
   async delete(id: Visit["id"]): Promise<Visit | null> {
     try {
       const visitToDelete = await VisitModel.findById(id)

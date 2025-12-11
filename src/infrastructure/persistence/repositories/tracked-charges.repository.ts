@@ -64,16 +64,16 @@ export class TrackedChargesRepository
       query.itemId = filters.itemId
     }
 
-    if (filters?.type) {
-      query.type = filters.type
+    if (filters?.type?.length) {
+      query.type = { $in: filters.type }
     }
 
-    if (filters?.paymentStatus) {
-      query.paymentStatus = filters.paymentStatus
+    if (filters?.paymentStatus?.length) {
+      query.paymentStatus = { $in: filters.paymentStatus }
     }
 
-    if (filters?.progressStatus) {
-      query.progressStatus = filters.progressStatus
+    if (filters?.progressStatus?.length) {
+      query.progressStatus = { $in: filters.progressStatus }
     }
 
     if (filters?.search) {
@@ -150,16 +150,16 @@ export class TrackedChargesRepository
       query.itemId = filters.itemId
     }
 
-    if (filters?.type) {
-      query.type = filters.type
+    if (filters?.type?.length) {
+      query.type = { $in: filters.type }
     }
 
-    if (filters?.paymentStatus) {
-      query.paymentStatus = filters.paymentStatus
+    if (filters?.paymentStatus?.length) {
+      query.paymentStatus = { $in: filters.paymentStatus }
     }
 
-    if (filters?.progressStatus) {
-      query.progressStatus = filters.progressStatus
+    if (filters?.progressStatus?.length) {
+      query.progressStatus = { $in: filters.progressStatus }
     }
 
     // Handle search filter - find matching patient/doctor IDs first

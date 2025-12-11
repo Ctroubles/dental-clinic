@@ -67,6 +67,18 @@ export class LocationRepository
     return mapLocationDocumentToEntity(location)
   }
 
+  async create(location: LocationInsert, createdBy: string): Promise<Location> {
+    const locationData = {
+      ...location,
+      createdBy,
+    }
+    const newLocation = await LocationModel.create(locationData)
+    if (!newLocation) {
+      throw new DatabaseOperationError("Error creating location")
+    }
+    return mapLocationDocumentToEntity(newLocation)!
+  }
+
   async delete(id: Location["id"]): Promise<Location | null> {
     const deletedLocation = await LocationModel.findByIdAndDelete(id)
     return mapLocationDocumentToEntity(deletedLocation)
