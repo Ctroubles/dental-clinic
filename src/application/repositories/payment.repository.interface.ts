@@ -17,12 +17,6 @@ export interface IPaymentRepository
   findByChargeId(chargeId: Payment["chargeId"]): Promise<Payment[]>
   findByInvoiceId(invoiceId: string): Promise<Payment[]>
   findByVisitId(visitId: Payment["visitId"]): Promise<Payment[]>
-  create(
-    payment: PaymentInsert,
-    createdBy: string,
-    session?: PersistenceSession
-  ): Promise<Payment>
-
   createMany(
     payments: PaymentInsert[],
     createdBy: string,
