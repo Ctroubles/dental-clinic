@@ -1,10 +1,5 @@
 "use client"
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "~/app/_components/ui/avatar"
 import { Badge } from "~/app/_components/ui/badge"
 import {
   Card,
@@ -13,8 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "~/app/_components/ui/card"
-import { dateToHumanReadable, getEntityInitials } from "~/lib/utils"
+import { dateToHumanReadable } from "~/lib/utils"
 import { useRecentPayments } from "@/features/analytics/hooks/api/queries"
+import { useAnalytics } from "../analytics-store"
 import { RecentSalesSkeleton } from "./recent-sales-skeleton"
 
 const paymentMethodLabels: Record<string, string> = {
@@ -35,7 +31,8 @@ const paymentMethodColors: Record<string, string> = {
 }
 
 export function RecentPayments() {
-  const { data, isLoading, error } = useRecentPayments()
+  const { dateRange } = useAnalytics()
+  const { data, isLoading, error } = useRecentPayments(dateRange)
 
   if (isLoading) {
     return <RecentSalesSkeleton />
@@ -46,7 +43,7 @@ export function RecentPayments() {
       <CardHeader>
         <CardTitle>Pagos Recientes</CardTitle>
         <CardDescription>
-          Últimos pagos registrados en el sistema
+          Pagos realizados en el período seleccionado
         </CardDescription>
       </CardHeader>
       <CardContent>

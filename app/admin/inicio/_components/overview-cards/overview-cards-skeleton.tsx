@@ -3,7 +3,7 @@ import { Skeleton } from "~/app/_components/ui/skeleton"
 
 export function OverviewCardsSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
       {Array.from({ length: 4 }).map((_, i) => (
         <Card key={i} className="gap-0">
           <CardHeader className="pb-2">

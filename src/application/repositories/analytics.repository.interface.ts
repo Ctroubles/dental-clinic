@@ -1,17 +1,22 @@
 export interface AnalyticsOverview {
-  revenueMonth: number
+  revenue: number
   revenueChangePercent: number
-  newPatientsMonth: number
+  newPatients: number
   newPatientsChangePercent: number
-  visitsMonth: number
+  visits: number
   visitsChangePercent: number
-  accountsReceivableMonth: number
+  accountsReceivable: number
   accountsReceivableChangePercent: number
 }
 
 export interface DailyRevenue {
   date: string
   revenue: number
+}
+
+export interface DailyVisit {
+  date: string
+  visits: number
 }
 
 export interface MonthlyVisit {
@@ -37,10 +42,19 @@ export interface RecentPayment {
   timeAgo: string
 }
 
+export interface DateRange {
+  from: Date
+  to: Date
+}
+
 export interface IAnalyticsRepository {
-  getOverview(): Promise<AnalyticsOverview>
-  getDailyRevenue(from: Date, to: Date): Promise<DailyRevenue[]>
-  getMonthlyVisits(months: number): Promise<MonthlyVisit[]>
-  getTopServices(limit: number): Promise<TopService[]>
-  getRecentPayments(limit: number): Promise<RecentPayment[]>
+  getOverview(dateRange: DateRange): Promise<AnalyticsOverview>
+  getDailyRevenue(dateRange: DateRange): Promise<DailyRevenue[]>
+  getDailyVisits(dateRange: DateRange): Promise<DailyVisit[]>
+  getMonthlyVisits(dateRange: DateRange): Promise<MonthlyVisit[]>
+  getTopServices(dateRange: DateRange, limit: number): Promise<TopService[]>
+  getRecentPayments(
+    dateRange: DateRange,
+    limit: number
+  ): Promise<RecentPayment[]>
 }

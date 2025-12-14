@@ -1,13 +1,13 @@
 "use client"
 
 import { useMemo } from "react"
-import { IconTrendingUp } from "@tabler/icons-react"
+import { differenceInDays, format, parse } from "date-fns"
+import { es } from "date-fns/locale"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "~/app/_components/ui/card"
@@ -17,7 +17,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "~/app/_components/ui/chart"
-import { useMonthlyVisits } from "@/features/analytics/hooks/api/queries"
+import { useDailyVisits } from "@/features/analytics/hooks/api/queries"
+import { useAnalytics } from "../analytics-store"
 import { AreaGraphSkeleton } from "./area-graph-skeleton"
 
 const chartConfig = {
@@ -28,29 +29,19 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function AreaGraph() {
-  const { data, isLoading } = useMonthlyVisits()
+  const { dateRange } = useAnalytics()
+  const { data, isLoading } = useDailyVisits(dateRange)
 
-  const { visitsData, totalVisits, avgVisits, growthPercentage } =
-    useMemo(() => {
-      const visitsData = data || []
-      const totalVisits = visitsData.reduce((acc, curr) => acc + curr.visits, 0)
-      const avgVisits =
-        visitsData.length > 0 ? Math.round(totalVisits / visitsData.length) : 0
+  const { visitsData, totalVisits, avgVisits } = useMemo(() => {
+    const visitsData = data || []
+    // +1 to include both boundary dates (inclusive range)
+    const totalDays = differenceInDays(dateRange.to, dateRange.from) + 1
+    const totalVisits = visitsData.reduce((acc, curr) => acc + curr.visits, 0)
+    const avgVisits =
+      totalDays > 0 ? (totalVisits / totalDays).toFixed(1) : "0.0"
 
-      const lastMonth = visitsData[visitsData.length - 1]
-      const previousMonth = visitsData[visitsData.length - 2]
-
-      const growthPercentage =
-        lastMonth && previousMonth
-          ? Math.round(
-              ((lastMonth.visits - previousMonth.visits) /
-                previousMonth.visits) *
-                100
-            )
-          : 0
-
-      return { visitsData, totalVisits, avgVisits, growthPercentage }
-    }, [data])
+    return { visitsData, totalVisits, avgVisits }
+  }, [data, dateRange])
 
   if (isLoading) {
     return <AreaGraphSkeleton />
@@ -59,10 +50,8 @@ export function AreaGraph() {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Visitas Mensuales</CardTitle>
-        <CardDescription>
-          Evolución de visitas en los últimos 6 meses
-        </CardDescription>
+        <CardTitle>Visitas Diarias</CardTitle>
+        <CardDescription>Evolución de visitas en el período</CardDescription>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
@@ -94,29 +83,34 @@ export function AreaGraph() {
             </defs>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
-              dataKey="month"
+              dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+              minTickGap={32}
+              tickFormatter={value => {
+                const date = parse(value, "yyyy-MM-dd", new Date())
+                return format(date, "EEE d/M", { locale: es })
+              }}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               allowDecimals={false}
-              label={{
-                value: "Visitas",
-                angle: -90,
-                position: "insideLeft",
-                offset: 10,
-                style: { fill: "#888", fontSize: 13 },
-              }}
             />
             <ChartTooltip
               cursor={false}
               content={
                 <ChartTooltipContent
-                  formatter={value => [`${value} visitas`, "Total"]}
+                  labelFormatter={value => {
+                    const date = parse(value, "yyyy-MM-dd", new Date())
+                    const text = format(date, "EEE d 'de' MMMM 'de' yyyy", {
+                      locale: es,
+                    })
+                    return text.charAt(0).toUpperCase() + text.slice(1)
+                  }}
+                  formatter={value => [`${value} visitas`]}
                 />
               }
             />
@@ -130,20 +124,9 @@ export function AreaGraph() {
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              Crecimiento de {growthPercentage}% en el último mes
-              <IconTrendingUp className="h-4 w-4 text-green-500" />
-            </div>
-            <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              Promedio mensual: {avgVisits} visitas | Total: {totalVisits}{" "}
-              visitas
-            </div>
-          </div>
-        </div>
-      </CardFooter>
+      <div className="px-6 pb-4 text-sm text-muted-foreground">
+        Promedio: {avgVisits} visitas/día | Total: {totalVisits} visitas
+      </div>
     </Card>
   )
 }

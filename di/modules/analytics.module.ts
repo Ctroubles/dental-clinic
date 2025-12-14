@@ -1,12 +1,14 @@
 import { createModule } from "@evyweb/ioctopus"
 import { getAnalyticsOverviewUseCase } from "@/application/use-cases/analytics/get-analytics-overview.use-case"
 import { getDailyRevenueUseCase } from "@/application/use-cases/analytics/get-daily-revenue.use-case"
+import { getDailyVisitsUseCase } from "@/application/use-cases/analytics/get-daily-visits.use-case"
 import { getMonthlyVisitsUseCase } from "@/application/use-cases/analytics/get-monthly-visits.use-case"
 import { getRecentPaymentsUseCase } from "@/application/use-cases/analytics/get-recent-payments.use-case"
 import { getTopServicesUseCase } from "@/application/use-cases/analytics/get-top-services.use-case"
 import { AnalyticsRepository } from "@/infrastructure/persistence/repositories/analytics.repository"
 import { getAnalyticsOverviewController } from "@/interface-adapters/controllers/analytics/get-analytics-overview.controller"
 import { getDailyRevenueController } from "@/interface-adapters/controllers/analytics/get-daily-revenue.controller"
+import { getDailyVisitsController } from "@/interface-adapters/controllers/analytics/get-daily-visits.controller"
 import { getMonthlyVisitsController } from "@/interface-adapters/controllers/analytics/get-monthly-visits.controller"
 import { getRecentPaymentsController } from "@/interface-adapters/controllers/analytics/get-recent-payments.controller"
 import { getTopServicesController } from "@/interface-adapters/controllers/analytics/get-top-services.controller"
@@ -30,6 +32,12 @@ export function createAnalyticsModule() {
   analyticsModule
     .bind(DI_SYMBOLS.IGetDailyRevenueUseCase)
     .toHigherOrderFunction(getDailyRevenueUseCase, [
+      DI_SYMBOLS.IAnalyticsRepository,
+    ])
+
+  analyticsModule
+    .bind(DI_SYMBOLS.IGetDailyVisitsUseCase)
+    .toHigherOrderFunction(getDailyVisitsUseCase, [
       DI_SYMBOLS.IAnalyticsRepository,
     ])
 
@@ -62,6 +70,12 @@ export function createAnalyticsModule() {
     .bind(DI_SYMBOLS.IGetDailyRevenueController)
     .toHigherOrderFunction(getDailyRevenueController, [
       DI_SYMBOLS.IGetDailyRevenueUseCase,
+    ])
+
+  analyticsModule
+    .bind(DI_SYMBOLS.IGetDailyVisitsController)
+    .toHigherOrderFunction(getDailyVisitsController, [
+      DI_SYMBOLS.IGetDailyVisitsUseCase,
     ])
 
   analyticsModule

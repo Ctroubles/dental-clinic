@@ -17,8 +17,8 @@ const META_THEME_COLORS = {
 }
 
 export const metadata: Metadata = {
-  title: "Olympus Gym",
-  description: "Olympus Gym",
+  title: "Risaris Admin",
+  description: "Risaris Admin",
 }
 
 export const viewport: Viewport = {

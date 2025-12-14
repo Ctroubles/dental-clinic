@@ -1,7 +1,10 @@
+import { addDays, endOfDay, format, startOfDay } from "date-fns"
 import { logger } from "~/config"
 import {
   AnalyticsOverview,
   DailyRevenue,
+  DailyVisit,
+  DateRange,
   IAnalyticsRepository,
   MonthlyVisit,
   RecentPayment,
@@ -17,28 +20,21 @@ import {
 } from "@/infrastructure/persistence/mongoose/models"
 
 export class AnalyticsRepository implements IAnalyticsRepository {
-  async getOverview(): Promise<AnalyticsOverview> {
+  async getOverview(dateRange: DateRange): Promise<AnalyticsOverview> {
     try {
-      const now = new Date()
-      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-      const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+      const currentStart = startOfDay(dateRange.from)
+      const currentEnd = endOfDay(dateRange.to)
 
-      // Previous month dates
-      const firstDayOfPrevMonth = new Date(
-        now.getFullYear(),
-        now.getMonth() - 1,
-        1
-      )
-      const lastDayOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0)
+      // Calculate previous period (same duration, before the current range)
+      const durationMs = currentEnd.getTime() - currentStart.getTime()
+      const prevEnd = new Date(currentStart.getTime() - 1)
+      const prevStart = new Date(prevEnd.getTime() - durationMs)
 
-      // Revenue this month
+      // Revenue current period
       const revenueResult = await PaymentModel.aggregate([
         {
           $match: {
-            date: {
-              $gte: firstDayOfMonth,
-              $lte: lastDayOfMonth,
-            },
+            date: { $gte: currentStart, $lte: currentEnd },
           },
         },
         {
@@ -49,14 +45,11 @@ export class AnalyticsRepository implements IAnalyticsRepository {
         },
       ])
 
-      // Revenue previous month
+      // Revenue previous period
       const revenuePrevResult = await PaymentModel.aggregate([
         {
           $match: {
-            date: {
-              $gte: firstDayOfPrevMonth,
-              $lte: lastDayOfPrevMonth,
-            },
+            date: { $gte: prevStart, $lte: prevEnd },
           },
         },
         {
@@ -67,38 +60,27 @@ export class AnalyticsRepository implements IAnalyticsRepository {
         },
       ])
 
-      // New patients this month
+      // New patients current period
       const newPatientsCount = await PatientModel.countDocuments({
-        createdAt: {
-          $gte: firstDayOfMonth,
-          $lte: lastDayOfMonth,
-        },
+        createdAt: { $gte: currentStart, $lte: currentEnd },
       })
 
-      // New patients previous month
+      // New patients previous period
       const newPatientsPrevCount = await PatientModel.countDocuments({
-        createdAt: {
-          $gte: firstDayOfPrevMonth,
-          $lte: lastDayOfPrevMonth,
-        },
+        createdAt: { $gte: prevStart, $lte: prevEnd },
       })
 
-      // Visits this month
+      // Visits current period
       const visitsCount = await VisitModel.countDocuments({
-        date: {
-          $gte: firstDayOfMonth,
-          $lte: lastDayOfMonth,
-        },
+        date: { $gte: currentStart, $lte: currentEnd },
       })
 
-      // Visits previous month
+      // Visits previous period
       const visitsPrevCount = await VisitModel.countDocuments({
-        date: {
-          $gte: firstDayOfPrevMonth,
-          $lte: lastDayOfPrevMonth,
-        },
+        date: { $gte: prevStart, $lte: prevEnd },
       })
 
+      // Accounts receivable (current state, filtered by creation date in range)
       const accountsReceivableResult = await TrackedChargesModel.aggregate([
         {
           $match: {
@@ -108,15 +90,14 @@ export class AnalyticsRepository implements IAnalyticsRepository {
                 ChargePaymentStatusEnum.Enum.unpaid,
               ],
             },
+            createdAt: { $gte: currentStart, $lte: currentEnd },
           },
         },
         {
           $group: {
             _id: null,
             total: {
-              $sum: {
-                $subtract: ["$totalPrice", "$paidAmount"],
-              },
+              $sum: { $subtract: ["$totalPrice", "$paidAmount"] },
             },
           },
         },
@@ -131,28 +112,24 @@ export class AnalyticsRepository implements IAnalyticsRepository {
                 ChargePaymentStatusEnum.Enum.unpaid,
               ],
             },
-            createdAt: {
-              $lte: lastDayOfPrevMonth,
-            },
+            createdAt: { $gte: prevStart, $lte: prevEnd },
           },
         },
         {
           $group: {
             _id: null,
             total: {
-              $sum: {
-                $subtract: ["$price", "$paidAmount"],
-              },
+              $sum: { $subtract: ["$totalPrice", "$paidAmount"] },
             },
           },
         },
       ])
 
       // Calculate percentage changes
-      const revenueMonth = revenueResult[0]?.total || 0
+      const revenue = revenueResult[0]?.total || 0
       const revenuePrev = revenuePrevResult[0]?.total || 0
       const revenueChangePercent =
-        revenuePrev > 0 ? ((revenueMonth - revenuePrev) / revenuePrev) * 100 : 0
+        revenuePrev > 0 ? ((revenue - revenuePrev) / revenuePrev) * 100 : 0
 
       const newPatientsChangePercent =
         newPatientsPrevCount > 0
@@ -165,27 +142,27 @@ export class AnalyticsRepository implements IAnalyticsRepository {
           ? ((visitsCount - visitsPrevCount) / visitsPrevCount) * 100
           : 0
 
-      const accountsReceivableMonth = accountsReceivableResult[0]?.total || 0
+      const accountsReceivable = accountsReceivableResult[0]?.total || 0
       const accountsReceivablePrev = accountsReceivablePrevResult[0]?.total || 0
       const accountsReceivableChangePercent =
         accountsReceivablePrev > 0
-          ? ((accountsReceivableMonth - accountsReceivablePrev) /
+          ? ((accountsReceivable - accountsReceivablePrev) /
               accountsReceivablePrev) *
             100
           : 0
 
       return {
-        revenueMonth,
+        revenue,
         revenueChangePercent: Math.round(revenueChangePercent * 100) / 100,
 
-        newPatientsMonth: newPatientsCount,
+        newPatients: newPatientsCount,
         newPatientsChangePercent:
           Math.round(newPatientsChangePercent * 100) / 100,
 
-        visitsMonth: visitsCount,
+        visits: visitsCount,
         visitsChangePercent: Math.round(visitsChangePercent * 100) / 100,
 
-        accountsReceivableMonth,
+        accountsReceivable,
         accountsReceivableChangePercent:
           Math.round(accountsReceivableChangePercent * 100) / 100,
       }
@@ -195,21 +172,25 @@ export class AnalyticsRepository implements IAnalyticsRepository {
     }
   }
 
-  async getDailyRevenue(from: Date, to: Date): Promise<DailyRevenue[]> {
+  async getDailyRevenue(dateRange: DateRange): Promise<DailyRevenue[]> {
     try {
+      const startDate = startOfDay(dateRange.from)
+      const endDate = endOfDay(dateRange.to)
+
       const result = await PaymentModel.aggregate([
         {
           $match: {
-            date: {
-              $gte: from,
-              $lte: to,
-            },
+            date: { $gte: startDate, $lte: endDate },
           },
         },
         {
           $group: {
             _id: {
-              $dateToString: { format: "%Y-%m-%d", date: "$date" },
+              $dateToString: {
+                format: "%Y-%m-%d",
+                date: "$date",
+                timezone: "America/Lima",
+              },
             },
             revenue: { $sum: "$amount" },
           },
@@ -226,24 +207,21 @@ export class AnalyticsRepository implements IAnalyticsRepository {
         },
       ])
 
-      console.log("result:", result)
       const map = new Map(result.map(r => [r.date, r.revenue]))
-      console.log("map:", map)
       const days: DailyRevenue[] = []
 
-      const current = new Date(from)
-      const end = new Date(to)
+      let current = startOfDay(dateRange.from)
+      const end = startOfDay(dateRange.to)
 
       while (current <= end) {
-        const key = current.toISOString().split("T")[0]
-        console.log("key:", key)
+        const key = format(current, "yyyy-MM-dd")
 
         days.push({
           date: key,
           revenue: map.get(key) || 0,
         })
 
-        current.setDate(current.getDate() + 1)
+        current = addDays(current, 1)
       }
 
       return days
@@ -253,23 +231,84 @@ export class AnalyticsRepository implements IAnalyticsRepository {
     }
   }
 
-  async getMonthlyVisits(months: number): Promise<MonthlyVisit[]> {
+  async getDailyVisits(dateRange: DateRange): Promise<DailyVisit[]> {
     try {
-      const now = new Date()
-      const startDate = new Date(now.getFullYear(), now.getMonth() - months, 1)
+      const startDate = startOfDay(dateRange.from)
+      const endDate = endOfDay(dateRange.to)
 
       const result = await VisitModel.aggregate([
         {
           $match: {
-            date: {
-              $gte: startDate,
-            },
+            date: { $gte: startDate, $lte: endDate },
           },
         },
         {
           $group: {
             _id: {
-              $dateToString: { format: "%Y-%m", date: "$date" },
+              $dateToString: {
+                format: "%Y-%m-%d",
+                date: "$date",
+                timezone: "America/Lima",
+              },
+            },
+            visits: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+        {
+          $project: {
+            _id: 0,
+            date: "$_id",
+            visits: 1,
+          },
+        },
+      ])
+
+      const map = new Map(result.map(r => [r.date, r.visits]))
+      const days: DailyVisit[] = []
+
+      let current = startOfDay(dateRange.from)
+      const end = startOfDay(dateRange.to)
+
+      while (current <= end) {
+        const key = format(current, "yyyy-MM-dd")
+
+        days.push({
+          date: key,
+          visits: map.get(key) || 0,
+        })
+
+        current = addDays(current, 1)
+      }
+
+      return days
+    } catch (error) {
+      logger.error("[AnalyticsRepository] Error getting daily visits", error)
+      throw new DatabaseOperationError(error)
+    }
+  }
+
+  async getMonthlyVisits(dateRange: DateRange): Promise<MonthlyVisit[]> {
+    try {
+      const startDate = startOfDay(dateRange.from)
+      const endDate = endOfDay(dateRange.to)
+
+      const result = await VisitModel.aggregate([
+        {
+          $match: {
+            date: { $gte: startDate, $lte: endDate },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: {
+                format: "%Y-%m",
+                date: "$date",
+                timezone: "America/Lima",
+              },
             },
             visits: { $sum: 1 },
           },
@@ -293,9 +332,20 @@ export class AnalyticsRepository implements IAnalyticsRepository {
     }
   }
 
-  async getTopServices(limit: number): Promise<TopService[]> {
+  async getTopServices(
+    dateRange: DateRange,
+    limit: number
+  ): Promise<TopService[]> {
     try {
+      const startDate = startOfDay(dateRange.from)
+      const endDate = endOfDay(dateRange.to)
+
       const result = await TrackedChargesModel.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: startDate, $lte: endDate },
+          },
+        },
         {
           $lookup: {
             from: "items",
@@ -354,9 +404,20 @@ export class AnalyticsRepository implements IAnalyticsRepository {
     }
   }
 
-  async getRecentPayments(limit: number): Promise<RecentPayment[]> {
+  async getRecentPayments(
+    dateRange: DateRange,
+    limit: number
+  ): Promise<RecentPayment[]> {
     try {
+      const startDate = startOfDay(dateRange.from)
+      const endDate = endOfDay(dateRange.to)
+
       const result = await PaymentModel.aggregate([
+        {
+          $match: {
+            date: { $gte: startDate, $lte: endDate },
+          },
+        },
         {
           $sort: { date: -1 },
         },

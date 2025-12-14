@@ -1,10 +1,11 @@
 import {
+  DateRange,
   IAnalyticsRepository,
   MonthlyVisit,
 } from "@/application/repositories/analytics.repository.interface"
 
 export interface IGetMonthlyVisitsUseCaseInput {
-  months: number
+  dateRange: DateRange
 }
 
 export interface IGetMonthlyVisitsUseCase {
@@ -17,6 +18,6 @@ export function getMonthlyVisitsUseCase(
   return async (
     input: IGetMonthlyVisitsUseCaseInput
   ): Promise<MonthlyVisit[]> => {
-    return analyticsRepository.getMonthlyVisits(input.months)
+    return analyticsRepository.getMonthlyVisits(input.dateRange)
   }
 }

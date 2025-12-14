@@ -6,8 +6,8 @@ import Header from "~/app/_components/layout/header"
 import { SidebarInset, SidebarProvider } from "~/app/_components/ui/sidebar"
 
 export const metadata: Metadata = {
-  title: "Olympus Gym - Admin",
-  description: "Olympus Gym - Admin",
+  title: "Risaris - Admin",
+  description: "Risaris - Admin",
 }
 
 export default async function DashboardLayout({

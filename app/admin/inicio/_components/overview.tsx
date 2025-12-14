@@ -17,7 +17,7 @@ import {
   TabsTrigger,
 } from "~/app/_components/ui/tabs"
 import { DailyRevenueGraph } from "./daily-revenue-graph/daily-revenue-graph"
-import { AreaGraph } from "./monthly-visits-graph/monthly-visits-graph"
+import { AreaGraph } from "./daily-visits-graph/daily-visits-graph"
 import { NewPatients } from "./new-patient"
 import { TopServicesGraph } from "./top-services-graph/pie-graph"
 
