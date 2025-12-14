@@ -17,10 +17,8 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "~/app/_components/ui/chart"
-import {
-  useRecentPayments,
-  useTopServices,
-} from "@/features/analytics/hooks/api/queries"
+import { useTopServices } from "@/features/analytics/hooks/api/queries"
+import { useAnalytics } from "../analytics-store"
 import { PieGraphSkeleton } from "./pie-graph-skeleton"
 
 // Distribución de servicios odontológicos
@@ -58,7 +56,8 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function TopServicesGraph() {
-  const { data, isLoading, error } = useTopServices()
+  const { dateRange } = useAnalytics()
+  const { data, isLoading, error } = useTopServices(dateRange)
 
   const chartData = useMemo(() => {
     if (!data) return []
@@ -88,9 +87,9 @@ export function TopServicesGraph() {
         <CardTitle>Servicios Más Solicitados</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Distribución de servicios este mes
+            Distribución de servicios en el período
           </span>
-          <span className="@[540px]/card:hidden">Servicios del mes</span>
+          <span className="@[540px]/card:hidden">Top servicios</span>
         </CardDescription>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
@@ -226,12 +225,13 @@ export function TopServicesGraph() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
-          {leadingService?.serviceName} es el servicio más solicitado con{" "}
-          {leadingPercentage}%
+          {leadingService?.serviceName} es el más solicitado (
+          {leadingPercentage}
+          %)
           <IconTrendingUp className="h-4 w-4" />
         </div>
         <div className="text-muted-foreground leading-none">
-          Datos del mes actual
+          Datos del período seleccionado
         </div>
       </CardFooter>
     </Card>

@@ -1,5 +1,8 @@
 import { AnalyticsOverview } from "@/application/repositories/analytics.repository.interface"
-import { IGetAnalyticsOverviewUseCase } from "@/application/use-cases/analytics/get-analytics-overview.use-case"
+import {
+  IGetAnalyticsOverviewUseCase,
+  IGetAnalyticsOverviewUseCaseInput,
+} from "@/application/use-cases/analytics/get-analytics-overview.use-case"
 import { DataResult } from "@/shared/result-handling/data-result"
 
 export type IGetAnalyticsOverviewController = ReturnType<
@@ -8,7 +11,9 @@ export type IGetAnalyticsOverviewController = ReturnType<
 
 export const getAnalyticsOverviewController =
   (getAnalyticsOverviewUseCase: IGetAnalyticsOverviewUseCase) =>
-  async (): Promise<DataResult<AnalyticsOverview>> => {
-    const overview = await getAnalyticsOverviewUseCase()
+  async (
+    input: IGetAnalyticsOverviewUseCaseInput
+  ): Promise<DataResult<AnalyticsOverview>> => {
+    const overview = await getAnalyticsOverviewUseCase(input)
     return DataResult.success(overview)
   }

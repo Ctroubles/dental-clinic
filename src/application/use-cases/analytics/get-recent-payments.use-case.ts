@@ -1,9 +1,11 @@
 import {
+  DateRange,
   IAnalyticsRepository,
   RecentPayment,
 } from "@/application/repositories/analytics.repository.interface"
 
 export interface IGetRecentPaymentsUseCaseInput {
+  dateRange: DateRange
   limit: number
 }
 
@@ -17,6 +19,6 @@ export function getRecentPaymentsUseCase(
   return async (
     input: IGetRecentPaymentsUseCaseInput
   ): Promise<RecentPayment[]> => {
-    return analyticsRepository.getRecentPayments(input.limit)
+    return analyticsRepository.getRecentPayments(input.dateRange, input.limit)
   }
 }

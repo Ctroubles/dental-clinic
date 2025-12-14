@@ -8,4 +8,4 @@ export const TIME_CONSTANTS = {
   DEBOUNCE_DELAY: 300,
 } as const
 
-export const HOME_PATH = "/admin/visitas"
+export const HOME_PATH = "/admin/inicio"

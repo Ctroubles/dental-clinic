@@ -1,11 +1,11 @@
 import {
   DailyRevenue,
+  DateRange,
   IAnalyticsRepository,
 } from "@/application/repositories/analytics.repository.interface"
 
 export interface IGetDailyRevenueUseCaseInput {
-  from: Date
-  to: Date
+  dateRange: DateRange
 }
 
 export interface IGetDailyRevenueUseCase {
@@ -18,6 +18,6 @@ export function getDailyRevenueUseCase(
   return async (
     input: IGetDailyRevenueUseCaseInput
   ): Promise<DailyRevenue[]> => {
-    return analyticsRepository.getDailyRevenue(input.from, input.to)
+    return analyticsRepository.getDailyRevenue(input.dateRange)
   }
 }

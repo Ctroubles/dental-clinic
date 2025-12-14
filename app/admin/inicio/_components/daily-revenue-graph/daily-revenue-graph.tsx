@@ -1,6 +1,8 @@
 "use client"
 
 import * as React from "react"
+import { format, parse } from "date-fns"
+import { es } from "date-fns/locale"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import {
   Card,
@@ -16,6 +18,7 @@ import {
   ChartTooltipContent,
 } from "~/app/_components/ui/chart"
 import { useDailyRevenue } from "@/features/analytics/hooks/api/queries"
+import { useAnalytics } from "../analytics-store"
 import { BarGraphSkeleton } from "./bar-graph-skeleton"
 
 export const description = "Gráfico de ingresos diarios"
@@ -28,7 +31,8 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function DailyRevenueGraph() {
-  const { data: dailyRevenue, isLoading } = useDailyRevenue()
+  const { dateRange } = useAnalytics()
+  const { data: dailyRevenue, isLoading } = useDailyRevenue(dateRange)
 
   const total = React.useMemo(
     () => ({
@@ -48,14 +52,16 @@ export function DailyRevenueGraph() {
           <CardTitle>Ingresos Diarios</CardTitle>
           <CardDescription>
             <span className="hidden @[540px]/card:block">
-              Evolución de ingresos diarios en el último mes
+              Evolución de ingresos diarios en el período
             </span>
-            <span className="@[540px]/card:hidden">Último mes</span>
+            <span className="@[540px]/card:hidden">Por día</span>
           </CardDescription>
         </div>
         <div className="flex">
           <div className="relative flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left sm:border-t-0 sm:border-l sm:px-8 sm:py-6">
-            <span className="text-muted-foreground text-xs">Total del mes</span>
+            <span className="text-muted-foreground text-xs">
+              Total del período
+            </span>
             <span className="text-lg leading-none font-bold sm:text-3xl text-primary">
               S/ {total.revenue.toLocaleString()}
             </span>
@@ -82,11 +88,8 @@ export function DailyRevenueGraph() {
               tickMargin={8}
               minTickGap={32}
               tickFormatter={value => {
-                const date = new Date(value)
-                return date.toLocaleDateString("es-PE", {
-                  day: "numeric",
-                  month: "short",
-                })
+                const date = parse(value, "yyyy-MM-dd", new Date())
+                return format(date, "EEE d/M", { locale: es })
               }}
             />
             <YAxis
@@ -108,12 +111,11 @@ export function DailyRevenueGraph() {
                 <ChartTooltipContent
                   className="w-[180px]"
                   labelFormatter={value => {
-                    const date = new Date(value)
-                    return date.toLocaleDateString("es-PE", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
+                    const date = parse(value, "yyyy-MM-dd", new Date())
+                    const text = format(date, "EEEE d 'de' MMMM 'de' yyyy", {
+                      locale: es,
                     })
+                    return text.charAt(0).toUpperCase() + text.slice(1)
                   }}
                   formatter={value => [`S/ ${value}`]}
                 />

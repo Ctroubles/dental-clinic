@@ -8,6 +8,7 @@ import { type ITrackedChargesRepository } from "@/application/repositories/track
 import { type IVisitRepository } from "@/application/repositories/visit.repository.interface"
 import { type IGetAnalyticsOverviewUseCase } from "@/application/use-cases/analytics/get-analytics-overview.use-case"
 import { type IGetDailyRevenueUseCase } from "@/application/use-cases/analytics/get-daily-revenue.use-case"
+import { type IGetDailyVisitsUseCase } from "@/application/use-cases/analytics/get-daily-visits.use-case"
 import { type IGetMonthlyVisitsUseCase } from "@/application/use-cases/analytics/get-monthly-visits.use-case"
 import { type IGetRecentPaymentsUseCase } from "@/application/use-cases/analytics/get-recent-payments.use-case"
 import { type IGetTopServicesUseCase } from "@/application/use-cases/analytics/get-top-services.use-case"
@@ -50,6 +51,7 @@ import { type IRegisterChargesForVisitUseCase } from "@/application/use-cases/vi
 import { type IUpdateVisitUseCase } from "@/application/use-cases/visits/update-visit.use-case"
 import { type IGetAnalyticsOverviewController } from "@/interface-adapters/controllers/analytics/get-analytics-overview.controller"
 import { type IGetDailyRevenueController } from "@/interface-adapters/controllers/analytics/get-daily-revenue.controller"
+import { type IGetDailyVisitsController } from "@/interface-adapters/controllers/analytics/get-daily-visits.controller"
 import { type IGetMonthlyVisitsController } from "@/interface-adapters/controllers/analytics/get-monthly-visits.controller"
 import { type IGetRecentPaymentsController } from "@/interface-adapters/controllers/analytics/get-recent-payments.controller"
 import { type IGetTopServicesController } from "@/interface-adapters/controllers/analytics/get-top-services.controller"
@@ -148,6 +150,7 @@ export const DI_SYMBOLS = {
   IGetLocationUseCase: Symbol.for("IGetLocationUseCase"),
   IGetAnalyticsOverviewUseCase: Symbol.for("IGetAnalyticsOverviewUseCase"),
   IGetDailyRevenueUseCase: Symbol.for("IGetDailyRevenueUseCase"),
+  IGetDailyVisitsUseCase: Symbol.for("IGetDailyVisitsUseCase"),
   IGetMonthlyVisitsUseCase: Symbol.for("IGetMonthlyVisitsUseCase"),
   IGetTopServicesUseCase: Symbol.for("IGetTopServicesUseCase"),
   IGetRecentPaymentsUseCase: Symbol.for("IGetRecentPaymentsUseCase"),
@@ -200,6 +203,7 @@ export const DI_SYMBOLS = {
     "IGetAnalyticsOverviewController"
   ),
   IGetDailyRevenueController: Symbol.for("IGetDailyRevenueController"),
+  IGetDailyVisitsController: Symbol.for("IGetDailyVisitsController"),
   IGetMonthlyVisitsController: Symbol.for("IGetMonthlyVisitsController"),
   IGetTopServicesController: Symbol.for("IGetTopServicesController"),
   IGetRecentPaymentsController: Symbol.for("IGetRecentPaymentsController"),
@@ -259,6 +263,7 @@ export interface DI_RETURN_TYPES {
   IGetLocationUseCase: IGetLocationUseCase
   IGetAnalyticsOverviewUseCase: IGetAnalyticsOverviewUseCase
   IGetDailyRevenueUseCase: IGetDailyRevenueUseCase
+  IGetDailyVisitsUseCase: IGetDailyVisitsUseCase
   IGetMonthlyVisitsUseCase: IGetMonthlyVisitsUseCase
   IGetTopServicesUseCase: IGetTopServicesUseCase
   IGetRecentPaymentsUseCase: IGetRecentPaymentsUseCase
@@ -303,6 +308,7 @@ export interface DI_RETURN_TYPES {
   IGetLocationController: IGetLocationController
   IGetAnalyticsOverviewController: IGetAnalyticsOverviewController
   IGetDailyRevenueController: IGetDailyRevenueController
+  IGetDailyVisitsController: IGetDailyVisitsController
   IGetMonthlyVisitsController: IGetMonthlyVisitsController
   IGetTopServicesController: IGetTopServicesController
   IGetRecentPaymentsController: IGetRecentPaymentsController

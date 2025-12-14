@@ -1,9 +1,11 @@
 import {
+  DateRange,
   IAnalyticsRepository,
   TopService,
 } from "@/application/repositories/analytics.repository.interface"
 
 export interface IGetTopServicesUseCaseInput {
+  dateRange: DateRange
   limit: number
 }
 
@@ -15,6 +17,6 @@ export function getTopServicesUseCase(
   analyticsRepository: IAnalyticsRepository
 ): IGetTopServicesUseCase {
   return async (input: IGetTopServicesUseCaseInput): Promise<TopService[]> => {
-    return analyticsRepository.getTopServices(input.limit)
+    return analyticsRepository.getTopServices(input.dateRange, input.limit)
   }
 }

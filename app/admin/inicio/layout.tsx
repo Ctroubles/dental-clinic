@@ -1,43 +1,37 @@
 import React from "react"
+import { Metadata } from "next"
 import PageContainer from "~/app/_components/layout/page-container"
 import { OverviewCards } from "~/app/admin/inicio/_components/overview-cards/overview-cards"
-import OverViewPage from "./_components/overview"
+import AnalyticsHeader from "./_components/analytics-header/analytics-header"
 
+export const metadata: Metadata = {
+  title: "Inicio",
+  description: "Inicio",
+}
+
+/* eslint-disable camelcase -- Next.js parallel routes require underscore naming */
 export default function OverViewLayout({
-  sales,
-  // eslint-disable-next-line camelcase
-  pie_stats,
-  // eslint-disable-next-line camelcase
-  bar_stats,
-  // eslint-disable-next-line camelcase
-  area_stats,
+  daily_revenue,
+  top_services,
+  monthly_visits,
+  payment_history,
 }: {
-  sales: React.ReactNode
-  pie_stats: React.ReactNode
-  bar_stats: React.ReactNode
-  area_stats: React.ReactNode
+  daily_revenue: React.ReactNode
+  top_services: React.ReactNode
+  monthly_visits: React.ReactNode
+  payment_history: React.ReactNode
 }) {
   return (
     <PageContainer>
       <div className="flex flex-1 flex-col space-y-2 pb-5">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">
-            Hola, bienvenido de nuevo 👋
-          </h2>
-        </div>
+        <AnalyticsHeader />
 
         <OverviewCards />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
-          {/* eslint-disable-next-line camelcase */}
-          <div className="col-span-4">{bar_stats}</div>
-          <div className="col-span-4 md:col-span-3">
-            {/* sales parallel routes */}
-            {sales}
-          </div>
-          {/* eslint-disable-next-line camelcase */}
-          <div className="col-span-4">{area_stats}</div>
-          {/* eslint-disable-next-line camelcase */}
-          <div className="col-span-4 md:col-span-3">{pie_stats}</div>
+          <div className="col-span-4">{daily_revenue}</div>
+          <div className="col-span-4 md:col-span-3">{payment_history}</div>
+          <div className="col-span-4">{monthly_visits}</div>
+          <div className="col-span-4 md:col-span-3">{top_services}</div>
         </div>
       </div>
     </PageContainer>
