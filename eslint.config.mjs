@@ -92,9 +92,6 @@ const eslintConfig = [
       // Enforce spacing inside single-line blocks
       "block-spacing": "error",
 
-      // Enforce “one true brace style” (1TBS) for braces
-      "brace-style": ["warn", "1tbs", { allowSingleLine: true }],
-
       // Enforce camelCase naming convention
       camelcase: "warn",
 
@@ -123,7 +120,7 @@ const eslintConfig = [
       "no-console": "warn",
       "no-debugger": "warn",
 
-      "import/no-cycle": ["warn", { maxDepth: 1 }],
+      // "import/no-cycle": ["warn", { maxDepth: 1 }],
       "import/no-self-import": "error",
       "import/no-useless-path-segments": "error", // could be warn
       // Evita re-exportar todo a ciegas:
