@@ -43,10 +43,10 @@ export function PatientVisitsTable({ visits }: PatientVisitsTableProps) {
             <TableRow>
               <TableHead>Fecha</TableHead>
               <TableHead>Doctor</TableHead>
+              <TableHead>Ubicación</TableHead>
               <TableHead>Notas</TableHead>
               <TableHead>Monto Pagado</TableHead>
               <TableHead>Cargos Atendidos</TableHead>
-              <TableHead>Creado en</TableHead>
               <TableHead className="w-20"></TableHead>
             </TableRow>
           </TableHeader>
@@ -70,6 +70,7 @@ export function PatientVisitsTable({ visits }: PatientVisitsTableProps) {
                       <ExternalLink className="w-4 h-4" />
                     </Link>
                   </TableCell>
+                  <TableCell>{visit.location?.name || "-"}</TableCell>
                   <TableCell className="max-w-xs truncate">
                     {visit.notes || "-"}
                   </TableCell>
@@ -77,7 +78,6 @@ export function PatientVisitsTable({ visits }: PatientVisitsTableProps) {
                     {formatCurrency(totalPrice)}
                   </TableCell>
                   <TableCell>{visit.charges?.length ?? 0}</TableCell>
-                  <TableCell>{dateToHumanReadable(visit.createdAt)}</TableCell>
                   <TableCell>
                     <Button variant="ghost" size="sm" className="gap-2" asChild>
                       <Link href={`/admin/visitas/${visit.id}`}>

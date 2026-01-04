@@ -6,6 +6,13 @@ export type IGetVisitByIdUseCase = ReturnType<typeof getVisitByIdUseCase>
 export const getVisitByIdUseCase =
   (visitRepository: IVisitRepository) =>
   async (input: { visitId: string }): Promise<Visit | null> => {
-    const visit = await visitRepository.findById(input.visitId)
+    const visit = await visitRepository.findById(input.visitId, [
+      "patient",
+      "doctor",
+      "location",
+      "payments",
+      "charges",
+    ])
+
     return visit
   }

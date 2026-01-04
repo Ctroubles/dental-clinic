@@ -1,7 +1,6 @@
 import { Invoice, InvoiceInsert } from "@/domain/entities/invoice"
 
 export interface IInvoiceRepository {
-  findById(id: Invoice["id"]): Promise<Invoice | null>
   findByPatientId(patientId: string): Promise<Invoice[]>
   findByVisitId(visitId: Invoice["visitId"]): Promise<Invoice[]>
   findByDateRange(startDate: string, endDate: string): Promise<Invoice[]>

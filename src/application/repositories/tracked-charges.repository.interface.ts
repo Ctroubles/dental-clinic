@@ -26,10 +26,6 @@ export interface ITrackedChargesRepository
     TrackedChargeInsert,
     TrackedChargesFilters
   > {
-  findById(
-    id: TrackedCharge["id"],
-    session?: PersistenceSession
-  ): Promise<TrackedCharge | null>
   findByPatientId(
     patientId: TrackedCharge["patientId"]
   ): Promise<TrackedCharge[]>

@@ -20,7 +20,7 @@ export function mapTrackedChargesDocumentToEntity(
     patientId: doc.patientId.toString(),
     doctorId: doc.doctorId.toString(),
     itemId: doc.itemId.toString(),
-    visitIds: doc.visitIds?.map((visitId) => visitId.toString()),
+    visitIds: doc.visitIds?.map(visitId => visitId.toString()),
     type: doc.type,
     description: doc.description,
     totalPrice: doc.totalPrice,

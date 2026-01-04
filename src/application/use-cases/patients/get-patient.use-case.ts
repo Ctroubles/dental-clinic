@@ -7,7 +7,10 @@ export type IGetPatientUseCase = ReturnType<typeof getPatientUseCase>
 export const getPatientUseCase =
   (patientRepository: IPatientRepository) =>
   async ({ patientId }: { patientId: string }): Promise<Patient> => {
-    const patient = await patientRepository.findById(patientId)
+    const patient = await patientRepository.findById(patientId, [
+      "visits",
+      "charges",
+    ])
 
     if (!patient) {
       throw new NotFoundError(`Patient with id ${patientId} not found`)

@@ -1,4 +1,4 @@
-import { addDays, endOfDay, format, startOfDay } from "date-fns"
+import { addDays, format } from "date-fns"
 import { logger } from "~/config"
 import {
   AnalyticsOverview,
@@ -22,8 +22,7 @@ import {
 export class AnalyticsRepository implements IAnalyticsRepository {
   async getOverview(dateRange: DateRange): Promise<AnalyticsOverview> {
     try {
-      const currentStart = startOfDay(dateRange.from)
-      const currentEnd = endOfDay(dateRange.to)
+      const { from: currentStart, to: currentEnd } = dateRange
 
       // Calculate previous period (same duration, before the current range)
       const durationMs = currentEnd.getTime() - currentStart.getTime()
@@ -174,8 +173,7 @@ export class AnalyticsRepository implements IAnalyticsRepository {
 
   async getDailyRevenue(dateRange: DateRange): Promise<DailyRevenue[]> {
     try {
-      const startDate = startOfDay(dateRange.from)
-      const endDate = endOfDay(dateRange.to)
+      const { from: startDate, to: endDate } = dateRange
 
       const result = await PaymentModel.aggregate([
         {
@@ -210,8 +208,8 @@ export class AnalyticsRepository implements IAnalyticsRepository {
       const map = new Map(result.map(r => [r.date, r.revenue]))
       const days: DailyRevenue[] = []
 
-      let current = startOfDay(dateRange.from)
-      const end = startOfDay(dateRange.to)
+      let current = startDate
+      const end = endDate
 
       while (current <= end) {
         const key = format(current, "yyyy-MM-dd")
@@ -233,8 +231,7 @@ export class AnalyticsRepository implements IAnalyticsRepository {
 
   async getDailyVisits(dateRange: DateRange): Promise<DailyVisit[]> {
     try {
-      const startDate = startOfDay(dateRange.from)
-      const endDate = endOfDay(dateRange.to)
+      const { from: startDate, to: endDate } = dateRange
 
       const result = await VisitModel.aggregate([
         {
@@ -269,8 +266,8 @@ export class AnalyticsRepository implements IAnalyticsRepository {
       const map = new Map(result.map(r => [r.date, r.visits]))
       const days: DailyVisit[] = []
 
-      let current = startOfDay(dateRange.from)
-      const end = startOfDay(dateRange.to)
+      let current = startDate
+      const end = endDate
 
       while (current <= end) {
         const key = format(current, "yyyy-MM-dd")
@@ -292,8 +289,7 @@ export class AnalyticsRepository implements IAnalyticsRepository {
 
   async getMonthlyVisits(dateRange: DateRange): Promise<MonthlyVisit[]> {
     try {
-      const startDate = startOfDay(dateRange.from)
-      const endDate = endOfDay(dateRange.to)
+      const { from: startDate, to: endDate } = dateRange
 
       const result = await VisitModel.aggregate([
         {
@@ -337,8 +333,7 @@ export class AnalyticsRepository implements IAnalyticsRepository {
     limit: number
   ): Promise<TopService[]> {
     try {
-      const startDate = startOfDay(dateRange.from)
-      const endDate = endOfDay(dateRange.to)
+      const { from: startDate, to: endDate } = dateRange
 
       const result = await TrackedChargesModel.aggregate([
         {
@@ -409,8 +404,7 @@ export class AnalyticsRepository implements IAnalyticsRepository {
     limit: number
   ): Promise<RecentPayment[]> {
     try {
-      const startDate = startOfDay(dateRange.from)
-      const endDate = endOfDay(dateRange.to)
+      const { from: startDate, to: endDate } = dateRange
 
       const result = await PaymentModel.aggregate([
         {

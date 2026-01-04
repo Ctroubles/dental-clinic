@@ -354,23 +354,6 @@ export class PaymentRepository
     }
   }
 
-  async findById(id: Payment["id"]): Promise<Payment | null> {
-    try {
-      const payment = await PaymentModel.findById(id)
-        .populate({
-          path: "charge",
-          populate: [{ path: "patient" }, { path: "doctor" }, { path: "item" }],
-        })
-        .populate("invoice")
-
-      return mapPaymentDocumentToEntity(payment)
-    } catch (error) {
-      logger.error("[PaymentRepository] Error finding payment by ID", error)
-
-      throw new DatabaseOperationError(error)
-    }
-  }
-
   async findByChargeId(chargeId: string): Promise<Payment[]> {
     try {
       const payments = await PaymentModel.find({

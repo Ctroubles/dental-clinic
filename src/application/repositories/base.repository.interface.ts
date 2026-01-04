@@ -14,7 +14,11 @@ export interface IBaseRepository<
     request: IPageableRequest<TFilters>,
     includes?: Array<keyof TEntity>
   ): Promise<PageableResult<TEntity>>
-  findById(id: string, session?: PersistenceSession): Promise<TEntity | null>
+  findById(
+    id: string,
+    includes?: Array<keyof TEntity>,
+    session?: PersistenceSession
+  ): Promise<TEntity | null>
   create(
     entity: IEntityInsert,
     createdBy: string,

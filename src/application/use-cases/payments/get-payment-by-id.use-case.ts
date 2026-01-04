@@ -9,6 +9,11 @@ export function getPaymentByIdUseCase(
   paymentRepository: IPaymentRepository
 ): IGetPaymentByIdUseCase {
   return async (paymentId: Payment["id"]): Promise<Payment | null> => {
-    return paymentRepository.findById(paymentId)
+    return paymentRepository.findById(paymentId, [
+      "charge",
+      "invoice",
+      "patient",
+      "doctor",
+    ])
   }
 }

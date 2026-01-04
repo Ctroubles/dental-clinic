@@ -13,7 +13,11 @@ export const updatePatientUseCase =
     const session = await patientRepository.startSession()
     try {
       session.startTransaction()
-      const currentPatient = await patientRepository.findById(id, session)
+      const currentPatient = await patientRepository.findById(
+        id,
+        ["visits", "charges"],
+        session
+      )
 
       if (!currentPatient) {
         throw new NotFoundError(`Paciente con id ${id} no encontrado`)

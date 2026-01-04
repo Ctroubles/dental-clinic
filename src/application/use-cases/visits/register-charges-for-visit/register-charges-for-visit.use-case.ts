@@ -43,7 +43,7 @@ export function registerChargesForVisitUseCase(
     )
 
     try {
-      const visit = await visitRepository.findById(visitId, session)
+      const visit = await visitRepository.findById(visitId, [], session)
       if (!visit) {
         await session.abortTransaction()
         await session.endSession()
@@ -96,6 +96,7 @@ export function registerChargesForVisitUseCase(
       ): Promise<Partial<TrackedChargeInsert> & { id: string }> => {
         const existingCharge = await trackedChargesRepository.findById(
           line.trackedChargeId,
+          [],
           session
         )
 

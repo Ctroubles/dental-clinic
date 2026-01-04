@@ -142,9 +142,18 @@ export abstract class BaseRepository<
 
   async findById(
     id: string,
+    includes?: Array<keyof TEntity>,
     session?: mongoose.mongo.ClientSession
   ): Promise<TEntity | null> {
     const query = this.model.findById(id)
+
+    const populateConfig = this.getPopulateConfig(includes)
+
+    if (populateConfig.length > 0) {
+      for (const populate of populateConfig) {
+        query.populate(populate as PopulateOptions)
+      }
+    }
 
     if (session) {
       query.session(session)

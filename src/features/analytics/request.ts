@@ -1,3 +1,4 @@
+import { endOfDay, startOfDay } from "date-fns"
 import { apiFetch } from "~/lib/api"
 import {
   AnalyticsOverview,
@@ -11,8 +12,9 @@ import {
 
 const FEATURE_PREFIX = "/analytics"
 
-const buildDateParams = (dateRange: DateRange) =>
-  `from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}`
+const buildDateParams = (dateRange: DateRange) => {
+  return `from=${startOfDay(dateRange.from).toISOString()}&to=${endOfDay(dateRange.to).toISOString()}`
+}
 
 export const getAnalyticsOverview = async (dateRange: DateRange) => {
   const response = await apiFetch<AnalyticsOverview>(

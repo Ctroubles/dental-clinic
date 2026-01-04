@@ -99,7 +99,7 @@ export class VisitRepository
           return {
             path: "patient",
             model: "Patient",
-            select: "dni firstName lastName",
+            select: "dni firstName lastName gender",
           }
         case "doctor":
           return {
@@ -113,35 +113,16 @@ export class VisitRepository
             model: "Location",
             select: "name",
           }
+        case "payments":
+          return "payments"
+        case "charges":
+          return "charges"
+        case "invoice":
+          return "invoice"
         default:
           throw new DatabaseOperationError(`Invalid include: ${include}`)
       }
     })
-  }
-
-  async findById(
-    id: Visit["id"],
-    session?: ClientSession
-  ): Promise<Visit | null> {
-    try {
-      const query = VisitModel.findById(id)
-        .populate("patient")
-        .populate("doctor")
-        .populate("location")
-        .populate("payments")
-        .populate("charges")
-
-      if (session) {
-        query.session(session)
-      }
-
-      const visit = await query
-
-      return mapVisitDocumentToEntity(visit)
-    } catch (error) {
-      logger.error("[VisitRepository] Error finding visit by ID", error)
-      throw new DatabaseOperationError(error)
-    }
   }
 
   async findByPatientId(patientId: string): Promise<Visit[]> {

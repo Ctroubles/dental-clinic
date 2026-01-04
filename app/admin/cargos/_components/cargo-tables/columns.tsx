@@ -1,7 +1,8 @@
 "use client"
 
+import Link from "next/link"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Eye } from "lucide-react"
 import { Badge } from "~/app/_components/ui/badge"
 import { Button } from "~/app/_components/ui/button"
 import { dateToHumanReadable, getEntityFullname } from "~/lib/utils"
@@ -223,6 +224,25 @@ export const columns: ColumnDef<TrackedCharge>[] = [
     },
     meta: {
       label: "Creado en",
+    },
+  },
+  // view details
+  {
+    id: "actions",
+    enableHiding: false,
+    header() {
+      return <div className="flex items-center justify-end">Acciones</div>
+    },
+    cell: ({ row }) => {
+      const cargo = row.original
+
+      return (
+        <div className="flex items-center justify-end">
+          <Link href={`/admin/cargos/${cargo.id}`} title="Ver detalles">
+            <Eye className="mr-2 h-4 w-4" />
+          </Link>
+        </div>
+      )
     },
   },
   // {

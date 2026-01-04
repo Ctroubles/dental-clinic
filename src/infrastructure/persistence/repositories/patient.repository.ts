@@ -74,51 +74,49 @@ export class PatientRepository
     return includes.map(include => {
       switch (include) {
         case "visits":
-          return "visits"
+          return {
+            path: "visits",
+            populate: [
+              {
+                path: "doctor",
+              },
+              {
+                path: "payments",
+              },
+              {
+                path: "location",
+              },
+              {
+                path: "charges",
+              },
+            ],
+            options: {
+              sort: {
+                date: -1,
+              },
+            },
+          }
         case "charges":
-          return "charges"
+          return {
+            path: "charges",
+            populate: [
+              {
+                path: "item",
+              },
+              {
+                path: "doctor",
+              },
+            ],
+            options: {
+              sort: {
+                createdAt: -1,
+              },
+            },
+          }
         default:
           return include
       }
     })
-  }
-
-  async findById(id: Patient["id"]): Promise<Patient | null> {
-    const patient = await PatientModel.findById(id)
-      .populate({
-        path: "visits",
-        populate: [
-          {
-            path: "doctor",
-            select: "firstName lastName",
-          },
-          {
-            path: "payments",
-            populate: {
-              path: "charge",
-            },
-          },
-        ],
-      })
-      .populate({
-        path: "charges",
-        populate: [
-          {
-            path: "item",
-            select: "name",
-          },
-          {
-            path: "doctor",
-            select: "firstName lastName",
-          },
-        ],
-      })
-
-    if (!patient) {
-      return null
-    }
-
-    return mapPatientDocumentToEntity(patient)
   }
 
   async findByDni(dni: Patient["dni"]): Promise<Patient | null> {

@@ -128,6 +128,20 @@ export class TrackedChargesRepository
       populateConfig.push("item")
     }
 
+    if (includes.includes("visits")) {
+      populateConfig.push({
+        path: "visits",
+        populate: [
+          {
+            path: "payments",
+          },
+          {
+            path: "location",
+          },
+        ],
+      })
+    }
+
     return populateConfig
   }
 
@@ -363,24 +377,6 @@ export class TrackedChargesRepository
       )
       throw new DatabaseOperationError(error)
     }
-  }
-
-  async findById(
-    id: TrackedCharge["id"],
-    session?: ClientSession
-  ): Promise<TrackedCharge | null> {
-    const query = TrackedChargesModel.findById(id)
-      .populate("patient")
-      .populate("doctor")
-      .populate("item")
-
-    if (session) {
-      query.session(session)
-    }
-
-    const charge = await query
-
-    return mapTrackedChargesDocumentToEntity(charge)
   }
 
   async findByPatientId(
