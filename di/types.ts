@@ -6,6 +6,7 @@ import { IPatientRepository } from "@/application/repositories/patient.repositor
 import { type IPaymentRepository } from "@/application/repositories/payment.repository.interface"
 import { type ITrackedChargesRepository } from "@/application/repositories/tracked-charges.repository.interface"
 import { type IVisitRepository } from "@/application/repositories/visit.repository.interface"
+import { type IPatientLookupService } from "@/application/services/patient-lookup.service.interface"
 import { type IGetAnalyticsOverviewUseCase } from "@/application/use-cases/analytics/get-analytics-overview.use-case"
 import { type IGetDailyRevenueUseCase } from "@/application/use-cases/analytics/get-daily-revenue.use-case"
 import { type IGetDailyVisitsUseCase } from "@/application/use-cases/analytics/get-daily-visits.use-case"
@@ -32,6 +33,7 @@ import { type ICreatePatientUseCase } from "@/application/use-cases/patients/cre
 import { type IDeletePatientUseCase } from "@/application/use-cases/patients/delete-patient.use-case"
 import { type IGetPatientUseCase } from "@/application/use-cases/patients/get-patient.use-case"
 import { type IGetPatientsUseCase } from "@/application/use-cases/patients/get-patients.use-case"
+import { type ILookupPatientByDniUseCase } from "@/application/use-cases/patients/lookup-patient-by-dni.use-case"
 import { type IUpdatePatientUseCase } from "@/application/use-cases/patients/update-patient.use-case"
 import { type IGetAllPaymentsUseCase } from "@/application/use-cases/payments/get-all-payments.use-case"
 import { IGetPaymentByIdUseCase } from "@/application/use-cases/payments/get-payment-by-id.use-case"
@@ -75,6 +77,7 @@ import { type ICreatePatientController } from "@/interface-adapters/controllers/
 import { type IDeletePatientController } from "@/interface-adapters/controllers/patients/delete-patient.controller"
 import { IGetPatientController } from "@/interface-adapters/controllers/patients/get-patient.controller"
 import { type IGetPatientsController } from "@/interface-adapters/controllers/patients/get-patients.controller"
+import { type ILookupPatientByDniController } from "@/interface-adapters/controllers/patients/lookup-patient-by-dni.controller"
 import { type IUpdatePatientController } from "@/interface-adapters/controllers/patients/update-patient.controller"
 import { IGetAllPaymentsController } from "@/interface-adapters/controllers/payments/get-all-payments.controller"
 import { type IGetPaymentByIdController } from "@/interface-adapters/controllers/payments/get-payment-by-id.controller"
@@ -95,6 +98,9 @@ import { type IUpdateVisitController } from "@/interface-adapters/controllers/vi
 
 export const DI_SYMBOLS = {
   // Services
+  IPatientLookupService: Symbol.for("IPatientLookupService"),
+
+  // Repositories
   IDoctorRepository: Symbol.for("IDoctorRepository"),
   IPatientRepository: Symbol.for("IPatientRepository"),
   IItemRepository: Symbol.for("IItemRepository"),
@@ -115,6 +121,7 @@ export const DI_SYMBOLS = {
   IGetPatientsUseCase: Symbol.for("IGetPatientsUseCase"),
   IUpdatePatientUseCase: Symbol.for("IUpdatePatientUseCase"),
   IDeletePatientUseCase: Symbol.for("IDeletePatientUseCase"),
+  ILookupPatientByDniUseCase: Symbol.for("ILookupPatientByDniUseCase"),
   ICreateVisitUseCase: Symbol.for("ICreateVisitUseCase"),
   IGetVisitUseCase: Symbol.for("IGetVisitUseCase"),
   IGetVisitsUseCase: Symbol.for("IGetVisitsUseCase"),
@@ -166,6 +173,7 @@ export const DI_SYMBOLS = {
   IGetPatientsController: Symbol.for("IGetPatientsController"),
   IDeletePatientController: Symbol.for("IDeletePatientController"),
   IUpdatePatientController: Symbol.for("IUpdatePatientController"),
+  ILookupPatientByDniController: Symbol.for("ILookupPatientByDniController"),
   ICreateVisitController: Symbol.for("ICreateVisitController"),
   IGetVisitController: Symbol.for("IGetVisitController"),
   IGetVisitsController: Symbol.for("IGetVisitsController"),
@@ -211,7 +219,7 @@ export const DI_SYMBOLS = {
 
 export interface DI_RETURN_TYPES {
   // Services
-  // IAuthenticationService: IAuthenticationService
+  IPatientLookupService: IPatientLookupService
 
   // Repositories
   IDoctorRepository: IDoctorRepository
@@ -234,6 +242,7 @@ export interface DI_RETURN_TYPES {
   IGetPatientsUseCase: IGetPatientsUseCase
   IUpdatePatientUseCase: IUpdatePatientUseCase
   IDeletePatientUseCase: IDeletePatientUseCase
+  ILookupPatientByDniUseCase: ILookupPatientByDniUseCase
   ICreateVisitUseCase: ICreateVisitUseCase
   IGetVisitUseCase: IGetVisitByIdUseCase
   IGetVisitsUseCase: IGetVisitsUseCase
@@ -279,6 +288,7 @@ export interface DI_RETURN_TYPES {
   IGetPatientsController: IGetPatientsController
   IDeletePatientController: IDeletePatientController
   IUpdatePatientController: IUpdatePatientController
+  ILookupPatientByDniController: ILookupPatientByDniController
   ICreateVisitController: ICreateVisitController
   IGetVisitController: IGetVisitByIdController
   IGetVisitsController: IGetVisitsController

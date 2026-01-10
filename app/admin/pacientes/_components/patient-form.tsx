@@ -2,10 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, Search, ShoppingCart } from "lucide-react"
+import { Loader2, Search } from "lucide-react"
 import QRCode from "qrcode"
 import { useForm } from "react-hook-form"
 import {
